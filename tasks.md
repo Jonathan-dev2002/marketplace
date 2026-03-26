@@ -1,0 +1,219 @@
+# 🛍️ E-Commerce Marketplace: Project Task Backlog
+
+เอกสารนี้รวบรวมรายการงาน (Tasks) ทั้งหมดสำหรับการพัฒนาระบบ E-Commerce แบบ Multi-vendor โดยแบ่งออกเป็น 5 ระยะ (Phases) เพื่อให้สามารถติดตามความคืบหน้าและจัดการ MVP (Minimum Viable Product) ได้อย่างมีประสิทธิภาพ
+
+---
+
+## 📦 Phase 1: Foundation & Authentication (รากฐานและความปลอดภัย)
+
+### [EM-001] Project Initialization & Infrastructure
+* **Feature:** Project Setup & Environment
+* **Concept:** เตรียมโครงสร้างโปรเจกต์ Spring Boot แบบ Modular Layered Architecture และตั้งค่า Service ต่างๆ ให้พร้อมรัน
+* **Checklist:**
+  - [ ] สร้างโปรเจกต์ Spring Boot (Java 21+)
+  - [ ] จัดโครงสร้าง Folder (controller, service, repository, entity, dto, common)
+  - [ ] ตั้งค่า Docker Compose (PostgreSQL, Redis, Meilisearch)
+  - [ ] ตั้งค่า Swagger (OpenAPI) สำหรับทำ API Docs
+* **Priority:** 🔴 High
+* **Difficulty:** ⚡ Medium
+
+### [EM-002] Advanced Authentication (JWT)
+* **Feature:** User Authentication & Security
+* **Concept:** ระบบยืนยันตัวตนแบบ Stateless โดยใช้ JSON Web Token พร้อมระบบจัดการ Session ความปลอดภัยสูงผ่าน Redis
+* **Checklist:**
+  - [ ] Implement Login / Register API
+  - [ ] สร้าง JWT Provider (Generate & Validate Token)
+  - [ ] เชื่อมต่อ Redis ทำ Token Blacklist (สำหรับ Logout)
+  - [ ] สร้าง Security Config & Filter Chain
+* **Priority:** 🔴 High
+* **Difficulty:** ⚡ Medium
+
+### [EM-003] Dynamic RBAC System (Role & Permission)
+* **Feature:** Role-Based Access Control
+* **Concept:** ระบบจัดการสิทธิ์ที่ยืดหยุ่น แยกตาราง Role และ Permission ออกจากกัน เพื่อรองรับการที่ร้านค้าสามารถสร้างตำแหน่งพนักงาน (Custom Role) ได้เอง
+* **Checklist:**
+  - [ ] สร้าง Entity: `User`, `Role`, `Permission`, `RolePermission`, `UserShopRole`
+  - [ ] สร้าง Data Seeder สำหรับ Default Roles (Admin, Seller, Buyer)
+  - [ ] Implement Middleware/Guard สำหรับเช็ค Permission ในแต่ละ Endpoint
+* **Priority:** 🔴 High
+* **Difficulty:** 🔥 Hard
+
+### [EM-004] User Profile & Address Book
+* **Feature:** User Data Management
+* **Concept:** จัดการข้อมูลส่วนตัวและสมุดที่อยู่สำหรับจัดส่งสินค้า ซึ่งผู้ใช้ 1 คนสามารถมีได้หลายที่อยู่
+* **Checklist:**
+  - [ ] API ดู/แก้ไข Profile
+  - [ ] API CRUD ที่อยู่ (Address)
+  - [ ] Logic การตั้งค่า Default Address
+* **Priority:** 🔴 High
+* **Difficulty:** 🧊 Easy
+
+### [EM-005] KYC Verification System
+* **Feature:** Identity Verification
+* **Concept:** ระบบยืนยันตัวตนสำหรับผู้ที่จะเปิดร้านค้า โดยให้อัปโหลดภาพเอกสารเพื่อให้ระบบหลังบ้านตรวจสอบ
+* **Checklist:**
+  - [ ] สร้าง Table `user_verifications`
+  - [ ] API Upload รูปบัตรประชาชน
+  - [ ] Admin API สำหรับกด Approve/Reject เปลี่ยนสถานะผู้ใช้
+* **Priority:** 🟡 Medium
+* **Difficulty:** 🧊 Easy
+
+---
+
+## 🛍️ Phase 2: Shop & Product Catalog (ร้านค้าและสินค้า)
+
+### [EM-006] Shop Management System
+* **Feature:** Multi-vendor Shop Management
+* **Concept:** ระบบจัดการข้อมูลร้านค้า และการจัดการพนักงานภายในร้านสำหรับแพลตฟอร์มแบบหลายผู้ขาย
+* **Checklist:**
+  - [ ] API สร้างร้านค้า (ผูกกับ User เจ้าของร้าน)
+  - [ ] API แก้ไขข้อมูลร้าน (Logo, Description)
+  - [ ] API เพิ่มพนักงานเข้าร้าน (Assign Role ในระดับร้านค้า)
+* **Priority:** 🔴 High
+* **Difficulty:** ⚡ Medium
+
+### [EM-007] Recursive Category System
+* **Feature:** Product Categories
+* **Concept:** ระบบหมวดหมู่สินค้าที่สามารถซ้อนกันได้แบบไม่จำกัดชั้น (Tree Structure)
+* **Checklist:**
+  - [ ] สร้าง Entity `Category` แบบ Self-referencing (`parent_id`)
+  - [ ] API CRUD หมวดหมู่สินค้า
+  - [ ] API Get Category Tree (ทำ Caching ด้วย Redis)
+* **Priority:** 🔴 High
+* **Difficulty:** ⚡ Medium
+
+### [EM-008] Product Variants & SKU System
+* **Feature:** Complex Product Catalog
+* **Concept:** ระบบจัดการสินค้าที่มีหลายตัวเลือก (เช่น สี, ไซส์) โดยแยกการจัดการสต็อกและราคาตาม SKU จริง
+* **Checklist:**
+  - [ ] ออกแบบและสร้าง Entity `Product`, `ProductOption`, `ProductSku`
+  - [ ] API สร้างสินค้าพร้อม Variant (จัดการ Transaction ให้บันทึกลงหลายตารางพร้อมกัน)
+  - [ ] API เปิด/ปิด การมองเห็นสินค้า (`isActive`)
+* **Priority:** 🔴 High
+* **Difficulty:** 🔥 Hard
+
+### [EM-009] Meilisearch Integration
+* **Feature:** High-Performance Search Engine
+* **Concept:** ระบบค้นหาสินค้าหน้าบ้านที่รวดเร็ว รองรับการค้นหาแบบพิมพ์ผิด (Typos Tolerance) และการทำ Filter แบบ Dynamic
+* **Checklist:**
+  - [ ] Config Meilisearch Client
+  - [ ] สร้าง Sync Service: Push ข้อมูลไป Meilisearch เมื่อมีการอัปเดต Product
+  - [ ] API Search สินค้า (รับ Keyword & Filter แล้วยิงไปหา Meili)
+* **Priority:** 🟡 Medium
+* **Difficulty:** ⚡ Medium
+
+---
+
+## ⚙️ Phase 3: Inventory & Data Consistency (คลังสินค้าและบัญชี)
+
+### [EM-010] Real-time Stock Management
+* **Feature:** Concurrency Inventory Control
+* **Concept:** ระบบตัดสต็อกที่แม่นยำ ป้องกันปัญหาการขายของเกิน (Overselling) เมื่อมีผู้ใช้งานแย่งกันกดซื้อจำนวนมาก
+* **Checklist:**
+  - [ ] Implement Atomic Update Query
+  - [ ] สร้าง Stock Service สำหรับ Validate จำนวนสินค้าก่อนสร้างออเดอร์
+* **Priority:** 🔴 High
+* **Difficulty:** 🔥 Hard
+
+### [EM-011] Inventory Ledger (Stock Card)
+* **Feature:** Inventory Audit Trail
+* **Concept:** สมุดบัญชีคุมสต็อกที่บันทึกประวัติการเปลี่ยนแปลงทุกครั้ง (เข้า/ออก/ปรับปรุง) เพื่อให้ตรวจสอบย้อนหลังได้อย่างโปร่งใส
+* **Checklist:**
+  - [ ] สร้าง Entity `InventoryLog` (มีฟิลด์ `lot_id` ด้วย)
+  - [ ] Implement Logic บังคับ Insert Log ทุกครั้งที่มีการแก้ไขสต็อก
+  - [ ] API เรียกดูประวัติสต็อกแยกตาม SKU
+* **Priority:** 🟡 Medium
+* **Difficulty:** ⚡ Medium
+
+### [EM-020] Lot Tracking & FIFO Costing System
+* **Feature:** Advanced ERP-Grade Costing
+* **Concept:** ระบบจัดการสินค้าแบบแยกล็อตการผลิต และอัลกอริทึมการตัดสต็อกข้ามล็อตแบบ First-In, First-Out (FIFO) เพื่อคำนวณต้นทุน/กำไรที่แท้จริง
+* **Checklist:**
+  - [ ] สร้าง Entity `ProductLot`
+  - [ ] เขียน FIFO Algorithm Service: วนลูปหา Lot ที่เก่าที่สุดและตัดสต็อกลดหลั่นลงไป
+  - [ ] เชื่อมต่อ Service นี้เข้ากับการสร้าง Order และบันทึก Log
+* **Priority:** 🟡 Medium
+* **Difficulty:** 🔥 Hard
+
+---
+
+## 💳 Phase 4: Order & Transaction (การซื้อขาย)
+
+### [EM-012] Shopping Cart System
+* **Feature:** Multi-shop Cart
+* **Concept:** ตะกร้าสินค้าที่รองรับการเก็บสินค้าจากหลายร้านค้าไว้รวมกัน และคำนวณราคาสรุปเบื้องต้น
+* **Checklist:**
+  - [ ] API Add/Remove/Update สินค้าในตะกร้า
+  - [ ] Logic คำนวณราคารวมของตะกร้า
+* **Priority:** 🔴 High
+* **Difficulty:** ⚡ Medium
+
+### [EM-013] Order Management & Splitting
+* **Feature:** Order Routing & Lifecycle
+* **Concept:** ระบบสร้างคำสั่งซื้อที่จะทำการ "แยกออเดอร์ตามร้านค้า" โดยอัตโนมัติเมื่อกด Checkout และจัดการวงจรชีวิตของสถานะออเดอร์
+* **Checklist:**
+  - [ ] Logic Checkout: รับตะกร้า -> Group by Shop -> สร้าง Order แยกใบ
+  - [ ] จัดการ Status Flow (PENDING -> PAID -> SHIPPED -> COMPLETED)
+* **Priority:** 🔴 High
+* **Difficulty:** 🔥 Hard
+
+### [EM-014] Mock Payment Gateway
+* **Feature:** Payment Simulation
+* **Concept:** ระบบจำลองการรับชำระเงินเพื่อทดสอบ Flow การตัดเงิน, การคืนสต็อก (ถ้ายกเลิก), และการเปลี่ยนสถานะ
+* **Checklist:**
+  - [ ] สร้าง Endpoint `/payment/mock`
+  - [ ] Logic: จำลองการจ่ายสำเร็จ -> Update สถานะ Order เป็น PAID -> เรียก Inventory Service ให้คอนเฟิร์มการจองสต็อก
+* **Priority:** 🔴 High
+* **Difficulty:** ⚡ Medium
+
+### [EM-015] Product Review System
+* **Feature:** Verified Buyer Reviews
+* **Concept:** ระบบให้คะแนนและรีวิวสินค้าที่อนุญาตเฉพาะผู้ที่ซื้อสินค้านั้นและสถานะออเดอร์เสร็จสมบูรณ์แล้วเท่านั้น
+* **Checklist:**
+  - [ ] API Submit Review (ตรวจสอบเงื่อนไขสถานะออเดอร์)
+  - [ ] API Get Reviews สำหรับแสดงผลที่หน้าสินค้า
+* **Priority:** 🟡 Medium
+* **Difficulty:** 🧊 Easy
+
+---
+
+## 📊 Phase 5: Analytics & Extra Features (ส่วนเสริมและสถิติ)
+
+### [EM-016] Seller Analytics Dashboard
+* **Feature:** Shop Performance Metrics
+* **Concept:** หน้าจอ API สรุปสถิติสำหรับแม่ค้าเพื่อดูยอดขายและสินค้าขายดี โดยใช้การเขียน Query ที่มีประสิทธิภาพ
+* **Checklist:**
+  - [ ] API Get Daily Sales (Aggregate Query)
+  - [ ] API Get Top Selling Products
+  - [ ] รับ Parameter แบบ POST method สำหรับ Filter ช่วงเวลา
+* **Priority:** 🟡 Medium
+* **Difficulty:** 🔥 Hard
+
+### [EM-017] System Audit Logs
+* **Feature:** System Security Trail
+* **Concept:** ระบบบันทึกพฤติกรรมของ User/Admin เมื่อมีการเปลี่ยนแปลงข้อมูลสำคัญในระบบ (เก็บค่าก่อนหน้าและค่าใหม่)
+* **Checklist:**
+  - [ ] สร้าง Entity `AuditLog` (เก็บ OldValue/NewValue แบบ JSONB)
+  - [ ] สร้าง Aspect/Listener ไปดักจับ Event การแก้ไขข้อมูลสำคัญ (เช่น ข้อมูลร้าน, ราคา)
+* **Priority:** 🟢 Low
+* **Difficulty:** ⚡ Medium
+
+### [EM-018] Wishlist Feature
+* **Feature:** User Favorites
+* **Concept:** ระบบรายการสินค้าโปรดที่ผู้ใช้สามารถกดบันทึกเก็บไว้ดูภายหลังได้
+* **Checklist:**
+  - [ ] สร้าง Entity `Favorite`
+  - [ ] API Add/Remove Favorite
+  - [ ] API Get Favorite List
+* **Priority:** 🟢 Low
+* **Difficulty:** 🧊 Easy
+
+### [EM-019] Coupon System
+* **Feature:** Promotional Vouchers
+* **Concept:** ระบบส่วนลดที่มีเงื่อนไขซับซ้อน ทั้งรูปแบบส่วนลดของร้านค้าเอง และส่วนลดกลางของแพลตฟอร์ม
+* **Checklist:**
+  - [ ] สร้าง Entity `Coupon`
+  - [ ] Logic ตรวจสอบเงื่อนไขคูปองตอน Checkout (ขั้นต่ำ, วันหมดอายุ)
+  - [ ] Logic คำนวณส่วนลดท้ายบิล
+* **Priority:** 🟢 Low
+* **Difficulty:** 🔥 Hard

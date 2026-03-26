@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # 🗄️ PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine # ใช้เวอร์ชัน Alpine เพื่อให้ Image มีขนาดเล็กและเบา
+    container_name: marketplace-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: marketplace_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Mount volume ป้องกันข้อมูลหายเมื่อปิด Container
+    restart: unless-stopped
+
+  # 🚀 Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: marketplace-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # 🔍 Meilisearch Engine
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    container_name: marketplace-meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_MASTER_KEY=masterKey1234567890 # คีย์สำหรับเชื่อมต่อ API ห้ามลืมเด็ดขาด!
+      - MEILI_ENV=development
+    volumes:
+      - meilisearch_data:/meili_data
+    restart: unless-stopped
+
+# ประกาศ Volumes เพื่อเก็บรักษาข้อมูลให้อยู่ถาวร
+volumes:
+  postgres_data:
+  redis_data:
+  meilisearch_data:
