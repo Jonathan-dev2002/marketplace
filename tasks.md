@@ -13,7 +13,7 @@
   - [ ] สร้างโปรเจกต์ Spring Boot (Java 21+)
   - [ ] จัดโครงสร้าง Folder (controller, service, repository, entity, dto, common)
   - [ ] ตั้งค่า Docker Compose (PostgreSQL, Redis, Meilisearch)
-  - [ ] ตั้งค่า Swagger (OpenAPI) สำหรับทำ API Docs
+  - [x] ตั้งค่า Swagger (OpenAPI) สำหรับทำ API Docs
 * **Priority:** 🔴 High
 * **Difficulty:** ⚡ Medium
 
