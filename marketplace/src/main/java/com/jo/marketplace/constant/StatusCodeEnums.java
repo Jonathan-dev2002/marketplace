@@ -34,6 +34,7 @@ public enum StatusCodeEnums {
     ADDRESS_DELETED_200("2000", HttpStatus.OK, "ลบที่อยู่สำเร็จ", "Address deleted successfully."),
     ADDRESS_DEFAULT_UPDATED_200("2000", HttpStatus.OK, "ตั้งค่าที่อยู่เริ่มต้นสำเร็จ", "Default address updated successfully."),
     ADDRESS_NOT_FOUND_404("4004", HttpStatus.NOT_FOUND, "ไม่พบข้อมูลที่อยู่", "Address not found."),
+    USER_DEACTIVATED_200("2000", HttpStatus.OK, "ปิดบัญชีผู้ใช้งานสำเร็จ", "User account deactivated successfully."),
     SHOP_NAME_DUPLICATE_400("4000", HttpStatus.BAD_REQUEST, "ชื่อร้านค้านี้ถูกใช้งานแล้ว กรุณาใช้ชื่ออื่น", "This shop name is already in use. Please choose another."),
     SHOP_UPDATED_200("2000", HttpStatus.OK, "แก้ไขข้อมูลร้านค้าสำเร็จ", "Shop updated successfully."),
     SHOP_DELETED_200("2000", HttpStatus.OK, "ลบร้านค้าสำเร็จ", "Shop deleted successfully."),

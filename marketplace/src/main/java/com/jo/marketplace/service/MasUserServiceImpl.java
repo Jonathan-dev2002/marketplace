@@ -5,6 +5,7 @@ import com.jo.marketplace.entity.MasUserEntity;
 import com.jo.marketplace.exception.BusinessException;
 import com.jo.marketplace.model.dto.request.UpdateUserProfileRequest;
 import com.jo.marketplace.model.dto.response.UserProfileResponse;
+import com.jo.marketplace.model.enums.UserStatusEnum;
 import com.jo.marketplace.repository.interfaces.MasUserRepository;
 import com.jo.marketplace.repository.projection.UserProfileProjection;
 import com.jo.marketplace.service.interfaces.MasUserService;
@@ -101,6 +102,14 @@ public class MasUserServiceImpl implements MasUserService {
                 .phone(savedUser.getPhone())
                 .status(savedUser.getStatus().name())
                 .build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deactivateMyAccount(UUID userId) {
+        MasUserEntity user = getUserById(userId);
+        user.setStatus(UserStatusEnum.DEACTIVATED);
+        userRepository.save(user);
     }
 
     private UserProfileResponse toProfileResponse(UserProfileProjection userProfile) {

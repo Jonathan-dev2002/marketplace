@@ -60,6 +60,7 @@
 * **Checklist:**
   - [x] API ดู Profile ของตัวเอง (`GET /api/v1/users/me`)
   - [x] API แก้ไข Profile ของตัวเอง (`PATCH /api/v1/users/me`)
+  - [x] API ปิดบัญชีของตัวเอง (`PATCH /api/v1/users/me/deactivate`)
   - [x] สร้าง Entity และ Repository สำหรับ Address Book
   - [x] API ดูรายการที่อยู่ของตัวเอง (`GET /api/v1/addresses`)
   - [x] API เพิ่มที่อยู่ (`POST /api/v1/addresses`)

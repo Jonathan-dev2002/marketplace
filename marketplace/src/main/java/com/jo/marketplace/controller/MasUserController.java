@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.jo.marketplace.constant.StatusCodeEnums.USER_DEACTIVATED_200;
 import static com.jo.marketplace.constant.StatusCodeEnums.USER_PROFILE_UPDATED_200;
 
 @RestController
@@ -38,5 +39,12 @@ public class MasUserController {
     ) {
         UserProfileResponse response = masUserService.updateMyProfile(UserUtil.getCurrentUser().getUserId(), request);
         return ResponseUtil.success(USER_PROFILE_UPDATED_200, response);
+    }
+
+    @PatchMapping("/me/deactivate")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BaseResponse<Void>> deactivateMyAccount() {
+        masUserService.deactivateMyAccount(UserUtil.getCurrentUser().getUserId());
+        return ResponseUtil.success(USER_DEACTIVATED_200, null);
     }
 }

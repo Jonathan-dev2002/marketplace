@@ -22,4 +22,6 @@ public interface MasUserService {
     UserProfileResponse getMyProfile(UUID userId);
 
     UserProfileResponse updateMyProfile(UUID userId, UpdateUserProfileRequest request);
+
+    void deactivateMyAccount(UUID userId);
 }
