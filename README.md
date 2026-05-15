@@ -18,13 +18,16 @@
 ## Features
 
 - JWT authentication
+- Refresh token flow and token logout blacklist
 - Stateless Spring Security configuration
 - Standard API response wrapper
 - Centralized exception handling
-- Role-based access control foundation
-- User profile endpoint
+- Dynamic role-based access control with shop-level permissions
+- User profile management
+- User address book management with default address rules
 - Multi-vendor shop management
 - Shop employee assignment and role management
+- Custom shop roles and role permission assignment
 - Soft delete support for shops
 - Docker Compose setup for PostgreSQL, Redis, and Meilisearch
 - API documentation with Swagger UI
@@ -112,10 +115,10 @@ HTTP Request
    cd marketplace
    ```
 
-4. **Install dependencies and run tests**
+4. **Install dependencies and compile**
 
    ```bash
-   mvn test
+   mvn -DskipTests compile
    ```
 
 ## Environment Variables
@@ -162,11 +165,11 @@ ADMIN_LAST_NAME=Administrator
    mvn spring-boot:run
    ```
 
-3. **Run tests**
+3. **Compile the application**
 
    ```bash
    cd marketplace
-   mvn test
+   mvn -DskipTests compile
    ```
 
 Default service ports:
@@ -196,10 +199,20 @@ http://localhost:8080/api-docs
 
 - `POST /api/auth/register` - Register a new user.
 - `POST /api/auth/login` - Login with username/email and password.
+- `POST /api/auth/logout` - Logout and blacklist the current access token.
+- `POST /api/auth/refresh` - Rotate a refresh token and issue a new token pair.
+- `POST /api/auth/change-password` - Change the current user's password.
 
 ### Users
 
-- `GET /api/users/me` - Get the current user's profile.
+- `GET /api/v1/users/me` - Get the current user's profile.
+- `PATCH /api/v1/users/me` - Update the current user's profile.
+- `GET /api/v1/users/me/addresses` - List the current user's addresses.
+- `POST /api/v1/users/me/addresses` - Create an address.
+- `GET /api/v1/users/me/addresses/{addressId}` - Get an address by ID.
+- `PATCH /api/v1/users/me/addresses/{addressId}` - Update an address.
+- `DELETE /api/v1/users/me/addresses/{addressId}` - Soft delete an address.
+- `PATCH /api/v1/users/me/addresses/{addressId}/default` - Set the default address.
 
 ### Shops
 
@@ -214,6 +227,12 @@ http://localhost:8080/api-docs
 - `POST /api/v1/shops/{shopId}/employees` - Assign an employee to a shop.
 - `DELETE /api/v1/shops/{shopId}/employees/{userId}` - Remove an employee from a shop.
 - `PATCH /api/v1/shops/{shopId}/employees/{userId}/role` - Change an employee's shop role.
+- `GET /api/v1/shops/{shopId}/roles` - List system and custom roles available for a shop.
+- `POST /api/v1/shops/{shopId}/roles` - Create a custom shop role.
+- `PATCH /api/v1/shops/{shopId}/roles/{roleId}` - Update a custom shop role.
+- `DELETE /api/v1/shops/{shopId}/roles/{roleId}` - Delete a custom shop role.
+- `PUT /api/v1/shops/{shopId}/roles/{roleId}/permissions` - Replace role permissions.
+- `GET /api/v1/shops/{shopId}/permissions/me` - List the current user's permissions in a shop.
 
 ## Contact
 
