@@ -38,7 +38,6 @@ public class MasUserEntity extends BaseEntity {
     @Column(name = "is_verified")
     private Boolean isVerified = false;
 
-    // ⚡ เปลี่ยนจาก String เป็น Enum พร้อมสั่งให้ Hibernate เซฟลง DB เป็นตัวอักษร
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private UserStatusEnum status = UserStatusEnum.ACTIVE;

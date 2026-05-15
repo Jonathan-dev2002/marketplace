@@ -15,7 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class) // 🛡️ เปิดระบบ Audit ดักจับการเปลี่ยนแปลงข้อมูล
+@EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
     @Id

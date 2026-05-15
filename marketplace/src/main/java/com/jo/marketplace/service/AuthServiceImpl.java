@@ -12,6 +12,7 @@ import com.jo.marketplace.repository.interfaces.MasRoleRepository;
 import com.jo.marketplace.repository.interfaces.MasUserRepository;
 import com.jo.marketplace.repository.interfaces.MasUserShopRoleRepository;
 import com.jo.marketplace.security.JwtProvider;
+import com.jo.marketplace.service.interfaces.AuthService;
 import com.jo.marketplace.service.interfaces.MasUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ import static com.jo.marketplace.constant.StatusCodeEnums.ROLE_NOT_FOUND_404;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthServiceImpl implements AuthService {
 
     private final MasUserRepository userRepository;
     private final MasUserService masUserService;
@@ -42,7 +43,7 @@ public class AuthService {
     private final MasRoleRepository roleRepository;
     private final MasUserShopRoleRepository userShopRoleRepository;
 
-//    @Override
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void register(RegisterRequest request) {
         masUserService.validateDuplicateUser(request.getUsername(), request.getEmail());
@@ -59,17 +60,17 @@ public class AuthService {
         log.info("User registered successfully: {}", request.getUsername());
 
         MasRoleEntity buyerRole = roleRepository.findByNameAndIsSystemDefinedTrue(RoleConstants.BUYER)
-                .orElseThrow(() -> new BusinessException(ROLE_NOT_FOUND_404,ROLE_NOT_FOUND_404.getDescriptionTH()));
+                .orElseThrow(() -> new BusinessException(ROLE_NOT_FOUND_404, ROLE_NOT_FOUND_404.getDescriptionTH()));
 
-        // สร้างข้อมูลการผูกสิทธิ์ (User ↔️ Platform ↔️ Role)
         MasUserShopRoleEntity userShopRole = new MasUserShopRoleEntity();
         userShopRole.setUserId(savedUser.getId());
         userShopRole.setRoleId(buyerRole.getId());
-        userShopRole.setShopId(PLATFORM_SHOP_ID); // ให้สิทธิ์เป็นระดับ Platform
+        userShopRole.setShopId(PLATFORM_SHOP_ID);
 
         userShopRoleRepository.save(userShopRole);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
         try {
@@ -77,7 +78,7 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(request.getUsernameOrEmail(), request.getPassword())
             );
 
-            MasUserEntity user = masUserService.getUserByUsernameOrEmail(request.getUsernameOrEmail());
+            MasUserEntity user = masUserService.getUserByUsernameOrEmail(authentication.getName());
 
             List<String> roles = user.getShopRoles().stream()
                     .map(shopRole -> shopRole.getRole().getName())

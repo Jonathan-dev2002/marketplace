@@ -4,6 +4,8 @@ import com.jo.marketplace.common.BaseResponse;
 import com.jo.marketplace.constant.StatusCodeEnums;
 import com.jo.marketplace.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -19,10 +21,9 @@ import java.util.stream.Collectors;
 import static com.jo.marketplace.constant.StatusCodeEnums.*;
 
 @Slf4j
-@RestControllerAdvice // ประกาศให้ Spring Boot รู้ว่านี่คือตัวดักจับ Error ระดับ Global
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ดักจับ Error ที่เราตั้งใจโยนเอง (Business Logic Error)
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<BaseResponse<Object>> handleBusinessException(BusinessException ex) {
         log.warn("Business Exception: Code={}, Message={}", ex.getCode(), ex.getMessage());
@@ -30,7 +31,6 @@ public class GlobalExceptionHandler {
         return ResponseUtil.error(status, ex.getMessage());
     }
 
-    // ดักจับ Error จากการทำ Validation (@Valid, @NotBlank, ฯลฯ)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BaseResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult()
@@ -43,6 +43,18 @@ public class GlobalExceptionHandler {
         log.warn("Validation Error: {}", errorMessage);
 
         return ResponseUtil.error(BAD_REQUEST_400, errorMessage);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<BaseResponse<Object>> handleAuthenticationException(AuthenticationException ex) {
+        log.warn("Authentication Error: {}", ex.getMessage());
+        return ResponseUtil.error(UNAUTHORIZED_401);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<BaseResponse<Object>> handleAccessDeniedException(AccessDeniedException ex) {
+        log.warn("Access Denied: {}", ex.getMessage());
+        return ResponseUtil.error(FORBIDDEN_403);
     }
 
     @ExceptionHandler(Exception.class)

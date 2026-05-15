@@ -8,7 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @UtilityClass
 public class UserUtil {
 
-    // 🛡️ ดึงข้อมูล User ที่กำลัง Login อยู่ปัจจุบัน
     public UserPrincipal getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {

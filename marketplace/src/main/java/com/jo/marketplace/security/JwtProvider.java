@@ -16,27 +16,24 @@ import java.util.UUID;
 @Component
 public class JwtProvider {
 
-    // ⚡ ดึงค่า Secret และเวลาหมดอายุมาจาก application.yml (เดี๋ยวเราไปเติมทีหลัง)
     @Value("${jwt.secret}")
     private String jwtSecret;
 
     @Value("${jwt.expiration-ms}")
     private int jwtExpirationMs;
 
-    // แปลง String Secret ให้เป็น Key เข้ารหัสระดับสูง (HMAC-SHA256)
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 🛡️ ฟังก์ชันสร้าง Token
     public String generateToken(UUID userId, String username, List<String> roles) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
         return Jwts.builder()
-                .subject(userId.toString()) // ใช้ ID เป็น Subject หลัก
-                .claim("username", username) // แนบข้อมูลเพิ่มเติม (Claims)
+                .subject(userId.toString())
+                .claim("username", username)
                 .claim("roles", roles)
                 .issuedAt(now)
                 .expiration(expiryDate)
@@ -45,12 +42,10 @@ public class JwtProvider {
     }
 
     public UUID getUserIdFromToken(String token) {
-        // เรียกใช้ฟังก์ชันแกะกล่องใหญ่ของเราเอง แล้วดึงแค่ Subject (ID) ออกมา
         String subject = getClaimsFromToken(token).getSubject();
         return UUID.fromString(subject);
     }
 
-    // 🛡️ ฟังก์ชันตรวจสอบความถูกต้องของ Token
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(authToken);
@@ -67,7 +62,6 @@ public class JwtProvider {
         return false;
     }
 
-    // 🛡️ ดึงข้อมูลทั้งหมดที่ฝังไว้ใน Token (Claims)
     public Claims getClaimsFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())

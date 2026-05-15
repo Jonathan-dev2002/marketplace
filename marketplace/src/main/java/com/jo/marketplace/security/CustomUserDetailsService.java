@@ -19,15 +19,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        // 1. ค้นหา User จาก Database
         MasUserEntity userEntity = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + usernameOrEmail));
 
-        // 2. แปลง MasUserEntity ของเรา ให้กลายเป็น UserDetails ของ Spring Security
         return User.builder()
                 .username(userEntity.getUsername())
-                .password(userEntity.getPassword()) // รหัสผ่านที่เข้ารหัสแล้วใน DB
-                .authorities(Collections.emptyList()) // ตอนนี้ยังไม่มี Role ให้ใส่ List ว่างไปก่อน
+                .password(userEntity.getPassword())
+                .authorities(Collections.emptyList())
                 .build();
     }
 }

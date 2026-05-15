@@ -12,9 +12,9 @@ spring:
   # JPA & Hibernate
   jpa:
     hibernate:
-      # Senior Practice: ห้ามใช้ update บน Production เด็ดขาด! ให้ใช้ validate เพื่อเช็คว่า DB ตรงกับ Entity ไหม
+      # Use validate in production after migrations are introduced.
       ddl-auto: update
-    show-sql: true # แสดง SQL Query ใน Console
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -40,5 +40,12 @@ springdoc:
 
 jwt:
   secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
-  # อายุของ Token: 86400000 ms = 24 ชั่วโมง
   expiration-ms: 86400000
+
+app:
+  admin:
+    username: ${ADMIN_USERNAME:system_admin}
+    email: ${ADMIN_EMAIL:admin@marketplace.com}
+    password: ${ADMIN_PASSWORD:Admin@1234}
+    first-name: ${ADMIN_FIRST_NAME:System}
+    last-name: ${ADMIN_LAST_NAME:Administrator}

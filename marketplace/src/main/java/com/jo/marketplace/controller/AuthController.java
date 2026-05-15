@@ -1,11 +1,10 @@
 package com.jo.marketplace.controller;
 
 import com.jo.marketplace.common.BaseResponse;
-import com.jo.marketplace.constant.StatusCodeEnums;
 import com.jo.marketplace.model.dto.request.LoginRequest;
 import com.jo.marketplace.model.dto.request.RegisterRequest;
 import com.jo.marketplace.model.dto.response.AuthResponse;
-import com.jo.marketplace.service.AuthService;
+import com.jo.marketplace.service.interfaces.AuthService;
 import com.jo.marketplace.utils.ResponseUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ import static com.jo.marketplace.constant.StatusCodeEnums.CREATED_201;
 
 @Validated
 @RestController
-@RequestMapping("/api/auth") // ⚡ URL นี้ถูกปลดล็อกไว้ใน SecurityConfig แล้ว
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 

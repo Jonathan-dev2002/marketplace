@@ -13,17 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor // ⚡ Senior Practice: ใช้ Lombok สร้าง Constructor Injection ให้โดยอัตโนมัติ (ปลอดภัยกว่า @Autowired)
+@RequiredArgsConstructor
 public class MasUserServiceImpl implements MasUserService {
 
     private final MasUserRepository userRepository;
 
     @Override
-    @Transactional(readOnly = true) // ⚡ Performance: บอก DB ว่าแค่อ่านข้อมูล ไม่ต้องสร้าง Transaction Lock
+    @Transactional(readOnly = true)
     public MasUserEntity getUserByUsername(String username) {
         log.info("Fetching user by username: {}", username);
 
-        // ใช้ Optional ร่วมกับ Exception กลางของเรา
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(StatusCodeEnums.NOT_FOUND_404, "ไม่พบข้อมูลผู้ใช้งานในระบบ"));
     }

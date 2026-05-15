@@ -13,7 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -29,22 +29,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(request);
 
             if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
-                // 1. ดึงข้อมูลทั้งหมดจาก Token
                 io.jsonwebtoken.Claims claims = jwtProvider.getClaimsFromToken(jwt);
                 UUID userId = UUID.fromString(claims.getSubject());
                 String username = claims.get("username", String.class);
-                String role = claims.get("role", String.class);
+                List<String> roles = claims.get("roles", List.class);
 
-                // 2. ⚡ สร้าง Object UserPrincipal ตามมาตรฐานของคุณ
                 UserPrincipal principal = UserPrincipal.builder()
                         .userId(userId)
                         .username(username)
-                        .role(role)
+                        .roles(roles)
                         .build();
 
-                // 3. ⚡ ยัด Object principal ลงไปแทน UUID เปล่าๆ
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        principal, null, java.util.Collections.emptyList());
+                        principal, null, java.util.Collections.emptyList()
+                );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -53,11 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.error("Could not set user authentication in security context", ex);
         }
 
-        // ปล่อย Request ให้ทำงานต่อไป
         filterChain.doFilter(request, response);
     }
 
-    // ดึง Token ออกมาจาก Header ที่ชื่อ Authorization: Bearer <token>
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {

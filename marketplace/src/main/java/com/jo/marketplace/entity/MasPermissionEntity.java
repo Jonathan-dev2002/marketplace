@@ -11,10 +11,10 @@ import lombok.Setter;
 public class MasPermissionEntity extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 100)
-    private String slug; // เช่น "product:create", "shop:edit"
+    private String slug;
 
     @Column(length = 50)
-    private String module; // จัดกลุ่มสิทธิ์ เช่น "PRODUCT", "ORDER"
+    private String module;
 
     @Column(columnDefinition = "TEXT")
     private String description;

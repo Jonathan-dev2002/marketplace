@@ -21,17 +21,14 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
 
-        // 1. ตั้งค่า Header ว่าจะตอบกลับเป็น JSON
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
-        // 2. ประกอบร่าง BaseResponse ของเรา
         BaseResponse<Object> baseResponse = new BaseResponse<>();
         baseResponse.setStatus(new BaseResponse.Status()
                 .setCode(StatusCodeEnums.UNAUTHORIZED_401.getCode())
                 .setDescription("กรุณาเข้าสู่ระบบ (Token is missing or invalid)"));
 
-        // 3. แปลง Java Object เป็น JSON แล้วเขียนส่งกลับไป
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getOutputStream(), baseResponse);
     }
