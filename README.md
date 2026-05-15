@@ -207,6 +207,7 @@ http://localhost:8080/api-docs
 
 - `GET /api/v1/users/me` - Get the current user's profile.
 - `PATCH /api/v1/users/me` - Update the current user's profile.
+- `PATCH /api/v1/users/me/deactivate` - Deactivate the current user's account.
 
 ### Addresses
 
