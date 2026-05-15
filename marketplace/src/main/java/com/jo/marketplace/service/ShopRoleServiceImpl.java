@@ -3,7 +3,6 @@ package com.jo.marketplace.service;
 import com.jo.marketplace.entity.MasPermissionEntity;
 import com.jo.marketplace.entity.MasRoleEntity;
 import com.jo.marketplace.entity.MasShopEntity;
-import com.jo.marketplace.entity.MasUserShopRoleEntity;
 import com.jo.marketplace.exception.BusinessException;
 import com.jo.marketplace.model.dto.request.CreateShopRoleRequest;
 import com.jo.marketplace.model.dto.request.UpdateRolePermissionsRequest;
@@ -126,27 +125,13 @@ public class ShopRoleServiceImpl implements ShopRoleService {
                     .toList();
         }
 
-        return userShopRoleRepository.findByUserId(userId).stream()
-                .filter(userRole -> shopId.equals(userRole.getShopId()))
-                .map(MasUserShopRoleEntity::getRole)
-                .flatMap(role -> role.getPermissions().stream())
-                .collect(java.util.stream.Collectors.toMap(
-                        MasPermissionEntity::getSlug,
-                        permission -> permission,
-                        (left, right) -> left,
-                        java.util.LinkedHashMap::new
-                ))
-                .values()
-                .stream()
+        return userShopRoleRepository.findPermissionsByUserIdAndShopId(userId, shopId).stream()
                 .map(this::toPermissionResponse)
                 .toList();
     }
 
     private boolean hasPlatformAdminPermissions(UUID userId) {
-        return userShopRoleRepository.findByUserId(userId).stream()
-                .filter(userRole -> PLATFORM_SHOP_ID.equals(userRole.getShopId()))
-                .map(MasUserShopRoleEntity::getRole)
-                .anyMatch(role -> Boolean.TRUE.equals(role.getIsSystemDefined()) && role.getPermissions().size() >= ALL_PERMISSIONS.size());
+        return userShopRoleRepository.countDistinctPermissionsByUserIdAndShopId(userId, PLATFORM_SHOP_ID) >= ALL_PERMISSIONS.size();
     }
 
     private MasShopEntity getShopOrThrow(UUID shopId) {
