@@ -17,7 +17,7 @@ CREATE TABLE users (
     last_name VARCHAR(100),
     phone VARCHAR(20),
     is_verified BOOLEAN DEFAULT FALSE,
-    status VARCHAR(20) DEFAULT 'ACTIVE', -- ACTIVE, SUSPENDED, BANNED
+    status VARCHAR(20) DEFAULT 'ACTIVE', -- ACTIVE, DEACTIVATED, SUSPENDED, BANNED
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     created_by UUID,
@@ -40,22 +40,31 @@ CREATE TABLE user_verifications (
     updated_by UUID
 );
 
--- 3. สมุดที่อยู่ (Addresses)
-CREATE TABLE addresses (
+-- 3. สมุดที่อยู่ (User Addresses)
+CREATE TABLE user_addresses (
     id UUID PRIMARY KEY,
     user_id UUID REFERENCES users(id),
-    recipient_name VARCHAR(100),
-    phone VARCHAR(20),
-    address_line1 TEXT,
-    address_line2 TEXT,
+    label VARCHAR(100),
+    recipient_name VARCHAR(150) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    address_line1 VARCHAR(255) NOT NULL,
+    address_line2 VARCHAR(255),
     sub_district VARCHAR(100),
     district VARCHAR(100),
     province VARCHAR(100),
-    zipcode VARCHAR(10),
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) DEFAULT 'Thailand' NOT NULL,
     is_default BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+    created_by UUID,
+    updated_by UUID,
+    deleted_at TIMESTAMP
 );
+
+CREATE UNIQUE INDEX uq_user_addresses_default
+ON user_addresses(user_id)
+WHERE is_default = TRUE AND deleted_at IS NULL;
 
 -- 4. ตำแหน่ง (Roles)
 CREATE TABLE roles (
