@@ -41,6 +41,10 @@ public enum StatusCodeEnums {
     SHOP_EMPLOYEE_NOT_FOUND_404("4004", HttpStatus.NOT_FOUND, "ไม่พบพนักงานในร้านนี้", "Shop employee not found."),
     SHOP_OWNER_OPERATION_INVALID_400("4000", HttpStatus.BAD_REQUEST, "ไม่สามารถทำรายการนี้กับเจ้าของร้านได้", "This operation cannot be applied to the shop owner."),
     SHOP_ROLE_INVALID_400("4000", HttpStatus.BAD_REQUEST, "Role นี้ไม่สามารถใช้กับร้านค้านี้ได้", "This role cannot be assigned to the shop."),
+    ROLE_DUPLICATE_409("4009", HttpStatus.CONFLICT, "ชื่อ Role นี้ถูกใช้งานแล้วในร้านนี้", "This role name is already used in this shop."),
+    ROLE_SYSTEM_MODIFY_INVALID_400("4000", HttpStatus.BAD_REQUEST, "ไม่สามารถแก้ไขหรือลบ System Role ได้", "System roles cannot be modified or deleted."),
+    ROLE_IN_USE_409("4009", HttpStatus.CONFLICT, "Role นี้ยังมีผู้ใช้งานอยู่ ไม่สามารถลบได้", "This role is still assigned to users."),
+    PERMISSION_NOT_FOUND_404("4004", HttpStatus.NOT_FOUND, "ไม่พบ Permission ในระบบ", "Permission not found."),
     SHOP_SLUG_DUPLICATE_409("4009", HttpStatus.CONFLICT, "slug ร้านค้านี้ถูกใช้งานแล้ว", "This shop slug is already in use."),
     SHOP_SLUG_INVALID_400("4000", HttpStatus.BAD_REQUEST, "slug ร้านค้าไม่ถูกต้อง", "Shop slug is invalid."),
 

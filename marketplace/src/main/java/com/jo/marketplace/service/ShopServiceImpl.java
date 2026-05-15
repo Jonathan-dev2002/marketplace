@@ -106,7 +106,6 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(rollbackFor = Exception.class)
     public void updateShop(UUID shopId, UpdateShopRequest request, UUID currentUserId) {
         MasShopEntity shop = getShopOrThrow(shopId);
-        validateShopOwner(shop, currentUserId);
 
         if (StringUtils.hasText(request.getName())) {
             String normalizedName = request.getName().trim();
@@ -133,7 +132,6 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(rollbackFor = Exception.class)
     public void updateShopStatus(UUID shopId, UpdateShopStatusRequest request, UUID currentUserId) {
         MasShopEntity shop = getShopOrThrow(shopId);
-        validateShopOwner(shop, currentUserId);
 
         shop.setIsActive(request.getActive());
         shopRepository.save(shop);
@@ -145,7 +143,6 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(rollbackFor = Exception.class)
     public void updateShopSlug(UUID shopId, UpdateShopSlugRequest request, UUID currentUserId) {
         MasShopEntity shop = getShopOrThrow(shopId);
-        validateShopOwner(shop, currentUserId);
 
         String slug = normalizeSlug(request.getSlug());
         validateSlug(slug);
@@ -164,7 +161,6 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(rollbackFor = Exception.class)
     public void softDeleteShop(UUID shopId, UUID currentUserId) {
         MasShopEntity shop = getShopOrThrow(shopId);
-        validateShopOwner(shop, currentUserId);
 
         shop.setIsActive(false);
         shop.setDeletedAt(LocalDateTime.now());
@@ -177,7 +173,6 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(rollbackFor = Exception.class)
     public void assignEmployee(UUID shopId, AssignShopEmployeeRequest request, UUID currentUserId) {
         MasShopEntity shop = getShopOrThrow(shopId);
-        validateShopOwner(shop, currentUserId);
 
         MasUserEntity employee = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new BusinessException(USER_NOT_FOUND_404, USER_NOT_FOUND_404.getDescriptionTH()));
@@ -206,7 +201,6 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(readOnly = true)
     public List<ShopEmployeeResponse> getEmployees(UUID shopId, UUID currentUserId) {
         MasShopEntity shop = getShopOrThrow(shopId);
-        validateShopOwner(shop, currentUserId);
 
         return userShopRoleRepository.findByShopId(shopId).stream()
                 .map(shopRole -> toShopEmployeeResponse(shopRole, shop.getOwnerId()))
@@ -217,7 +211,6 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(rollbackFor = Exception.class)
     public void removeEmployee(UUID shopId, UUID userId, UUID currentUserId) {
         MasShopEntity shop = getShopOrThrow(shopId);
-        validateShopOwner(shop, currentUserId);
         validateNotOwner(shop, userId);
 
         userShopRoleRepository.findFirstByShopIdAndUserId(shopId, userId)
@@ -232,7 +225,6 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(rollbackFor = Exception.class)
     public void changeEmployeeRole(UUID shopId, UUID userId, ChangeShopEmployeeRoleRequest request, UUID currentUserId) {
         MasShopEntity shop = getShopOrThrow(shopId);
-        validateShopOwner(shop, currentUserId);
         validateNotOwner(shop, userId);
 
         MasUserShopRoleEntity currentRole = userShopRoleRepository.findFirstByShopIdAndUserId(shopId, userId)

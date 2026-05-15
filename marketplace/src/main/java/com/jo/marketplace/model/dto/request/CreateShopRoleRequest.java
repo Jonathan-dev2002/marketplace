@@ -1,0 +1,19 @@
+package com.jo.marketplace.model.dto.request;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class CreateShopRoleRequest {
+
+    @NotBlank(message = "กรุณาระบุชื่อ Role")
+    @Size(max = 50, message = "ชื่อ Role ต้องไม่เกิน 50 ตัวอักษร")
+    private String name;
+
+    private String description;
+
+    private List<String> permissionSlugs = List.of();
+}

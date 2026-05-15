@@ -39,9 +39,18 @@
 * **Feature:** Role-Based Access Control
 * **Concept:** ระบบจัดการสิทธิ์ที่ยืดหยุ่น แยกตาราง Role และ Permission ออกจากกัน เพื่อรองรับการที่ร้านค้าสามารถสร้างตำแหน่งพนักงาน (Custom Role) ได้เอง
 * **Checklist:**
-  - [ ] สร้าง Entity: `User`, `Role`, `Permission`, `RolePermission`, `UserShopRole`
-  - [ ] สร้าง Data Seeder สำหรับ Default Roles (Admin, Seller, Buyer)
-  - [ ] Implement Middleware/Guard สำหรับเช็ค Permission ในแต่ละ Endpoint
+  - [x] สร้าง Entity พื้นฐาน: `User`, `Role`, `Permission`, `RolePermission`, `UserShopRole`
+  - [x] สร้าง Data Seeder สำหรับ Default Roles (`ADMIN`, `SELLER`, `BUYER`)
+  - [x] กำหนด Permission Slug มาตรฐานของระบบ เช่น `SHOP_VIEW`, `SHOP_UPDATE`, `SHOP_EMPLOYEE_MANAGE`, `PRODUCT_CREATE`, `PRODUCT_UPDATE`, `ORDER_VIEW`
+  - [x] เพิ่ม Data Seeder สำหรับ Default Permissions และ Mapping ระหว่าง Default Roles กับ Permissions
+  - [x] เพิ่ม Repository Query สำหรับตรวจ role/permission ระดับร้านค้า (`userId`, `shopId`, `permissionSlug`)
+  - [x] สร้าง Permission Guard/Evaluator สำหรับใช้กับ `@PreAuthorize` เช่น `@shopSecurity.hasPermission(#shopId, 'SHOP_UPDATE')`
+  - [x] ปรับ EM-006 Shop APIs ให้ใช้ Permission Guard แทนการเช็ค owner แบบ hardcoded ในทุกจุดที่เหมาะสม
+  - [x] เพิ่ม API จัดการ Custom Role ภายในร้าน (`POST/GET/PATCH/DELETE /api/v1/shops/{shopId}/roles`)
+  - [x] เพิ่ม API จัดการ Permission ของ Role (`PUT /api/v1/shops/{shopId}/roles/{roleId}/permissions`)
+  - [x] เพิ่ม API ดู Permission ของผู้ใช้ในร้าน (`GET /api/v1/shops/{shopId}/permissions/me`)
+  - [x] เพิ่ม Business Rules: ห้ามแก้ไข/ลบ system role โดยตรง, custom role ต้องอยู่ในร้านของตัวเอง, และห้าม assign permission นอกขอบเขตร้าน
+  - [x] ปรับ JWT/Auth Response หรือ endpoint `/permissions/me` ให้ frontend รู้สิทธิ์ของ user ตาม shop ที่เลือก
 * **Priority:** 🔴 High
 * **Difficulty:** 🔥 Hard
 
