@@ -25,6 +25,7 @@
 - Dynamic role-based access control with shop-level permissions
 - User profile management
 - User address book management with default address rules
+- Address book management as a separate API module
 - Multi-vendor shop management
 - Shop employee assignment and role management
 - Custom shop roles and role permission assignment
@@ -207,12 +208,15 @@ http://localhost:8080/api-docs
 
 - `GET /api/v1/users/me` - Get the current user's profile.
 - `PATCH /api/v1/users/me` - Update the current user's profile.
-- `GET /api/v1/users/me/addresses` - List the current user's addresses.
-- `POST /api/v1/users/me/addresses` - Create an address.
-- `GET /api/v1/users/me/addresses/{addressId}` - Get an address by ID.
-- `PATCH /api/v1/users/me/addresses/{addressId}` - Update an address.
-- `DELETE /api/v1/users/me/addresses/{addressId}` - Soft delete an address.
-- `PATCH /api/v1/users/me/addresses/{addressId}/default` - Set the default address.
+
+### Addresses
+
+- `GET /api/v1/addresses` - List the current user's addresses.
+- `POST /api/v1/addresses` - Create an address.
+- `GET /api/v1/addresses/{addressId}` - Get an address by ID.
+- `PATCH /api/v1/addresses/{addressId}` - Update an address.
+- `DELETE /api/v1/addresses/{addressId}` - Soft delete an address.
+- `PATCH /api/v1/addresses/{addressId}/default` - Set the default address.
 
 ### Shops
 
