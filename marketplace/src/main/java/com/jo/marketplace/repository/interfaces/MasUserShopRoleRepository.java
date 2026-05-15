@@ -1,5 +1,6 @@
 package com.jo.marketplace.repository.interfaces;
 
+import com.jo.marketplace.entity.MasPermissionEntity;
 import com.jo.marketplace.entity.MasUserShopRoleEntity;
 import com.jo.marketplace.entity.MasUserShopRoleId;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -39,6 +40,33 @@ public interface MasUserShopRoleRepository extends JpaRepository<MasUserShopRole
             @Param("userId") UUID userId,
             @Param("shopId") UUID shopId,
             @Param("permissionSlug") String permissionSlug
+    );
+
+    @Query("""
+            select distinct permission
+            from MasUserShopRoleEntity usr
+            join usr.role role
+            join role.permissions permission
+            where usr.userId = :userId
+              and usr.shopId = :shopId
+            order by permission.slug
+            """)
+    List<MasPermissionEntity> findPermissionsByUserIdAndShopId(
+            @Param("userId") UUID userId,
+            @Param("shopId") UUID shopId
+    );
+
+    @Query("""
+            select count(distinct permission.slug)
+            from MasUserShopRoleEntity usr
+            join usr.role role
+            join role.permissions permission
+            where usr.userId = :userId
+              and usr.shopId = :shopId
+            """)
+    long countDistinctPermissionsByUserIdAndShopId(
+            @Param("userId") UUID userId,
+            @Param("shopId") UUID shopId
     );
 
     void deleteByShopIdAndUserId(UUID shopId, UUID userId);
