@@ -5,6 +5,7 @@ import com.jo.marketplace.exception.BusinessException;
 import com.jo.marketplace.model.dto.request.CreateUserAddressRequest;
 import com.jo.marketplace.model.dto.request.UpdateUserAddressRequest;
 import com.jo.marketplace.model.dto.response.UserAddressResponse;
+import com.jo.marketplace.repository.interfaces.MasUserRepository;
 import com.jo.marketplace.repository.interfaces.UserAddressRepository;
 import com.jo.marketplace.service.interfaces.UserAddressService;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +18,14 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.jo.marketplace.constant.StatusCodeEnums.ADDRESS_NOT_FOUND_404;
+import static com.jo.marketplace.constant.StatusCodeEnums.USER_NOT_FOUND_404;
 
 @Service
 @RequiredArgsConstructor
 public class UserAddressServiceImpl implements UserAddressService {
 
     private final UserAddressRepository addressRepository;
+    private final MasUserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,6 +38,8 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserAddressResponse createAddress(UUID userId, CreateUserAddressRequest request) {
+        lockUserAddressBook(userId);
+
         boolean firstAddress = !addressRepository.existsByUserIdAndDeletedAtIsNull(userId);
         boolean shouldBeDefault = firstAddress || Boolean.TRUE.equals(request.getDefaultAddress());
 
@@ -101,6 +106,7 @@ public class UserAddressServiceImpl implements UserAddressService {
             address.setCountry(normalizeCountry(request.getCountry()));
         }
         if (Boolean.TRUE.equals(request.getDefaultAddress())) {
+            lockUserAddressBook(userId);
             addressRepository.clearDefaultAddress(userId);
             address.setDefaultAddress(true);
         }
@@ -111,6 +117,8 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteAddress(UUID userId, UUID addressId) {
+        lockUserAddressBook(userId);
+
         UserAddressEntity address = getAddressOrThrow(userId, addressId);
         boolean wasDefault = Boolean.TRUE.equals(address.getDefaultAddress());
 
@@ -130,6 +138,8 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserAddressResponse setDefaultAddress(UUID userId, UUID addressId) {
+        lockUserAddressBook(userId);
+
         UserAddressEntity address = getAddressOrThrow(userId, addressId);
         addressRepository.clearDefaultAddress(userId);
         address.setDefaultAddress(true);
@@ -139,6 +149,11 @@ public class UserAddressServiceImpl implements UserAddressService {
     private UserAddressEntity getAddressOrThrow(UUID userId, UUID addressId) {
         return addressRepository.findByIdAndUserIdAndDeletedAtIsNull(addressId, userId)
                 .orElseThrow(() -> new BusinessException(ADDRESS_NOT_FOUND_404, ADDRESS_NOT_FOUND_404.getDescriptionTH()));
+    }
+
+    private void lockUserAddressBook(UUID userId) {
+        userRepository.findLockedById(userId)
+                .orElseThrow(() -> new BusinessException(USER_NOT_FOUND_404, USER_NOT_FOUND_404.getDescriptionTH()));
     }
 
     private String normalizeNullable(String value) {
