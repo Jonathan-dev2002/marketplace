@@ -25,7 +25,7 @@ import static com.jo.marketplace.constant.StatusCodeEnums.PASSWORD_CHANGED_200;
 
 @Validated
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
