@@ -17,7 +17,7 @@ public class MasUserShopRoleEntity {
     private UUID userId;
 
     @Id
-    @Column(name = "shop_id") // ปล่อย NULL ได้ถ้าเป็นสิทธิ์ระดับ Platform
+    @Column(name = "shop_id")
     private UUID shopId;
 
     @Id
@@ -31,4 +31,8 @@ public class MasUserShopRoleEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", insertable = false, updatable = false)
     private MasRoleEntity role;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_id", insertable = false, updatable = false)
+    private MasShopEntity shop;
 }

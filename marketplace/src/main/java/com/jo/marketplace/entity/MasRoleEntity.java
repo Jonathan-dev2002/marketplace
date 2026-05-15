@@ -18,7 +18,7 @@ public class MasRoleEntity extends BaseEntity {
     private String name;
 
     @Column(name = "shop_id")
-    private UUID shopId; // NULL = Role กลางของระบบ, มีค่า = Role เฉพาะของร้านค้านั้น
+    private UUID shopId;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -26,11 +26,11 @@ public class MasRoleEntity extends BaseEntity {
     @Column(name = "is_system_defined" , columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isSystemDefined = false;
 
-    @ManyToMany(fetch = FetchType.EAGER) // ใช้ EAGER เพราะเวลาดึง Role เรามักจะต้องการ Permission ไปทำ JWT เสมอ
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "role_permissions", // ชื่อตารางกลางใน DB
-            joinColumns = @JoinColumn(name = "role_id"), // ฝั่งเรา (Role)
-            inverseJoinColumns = @JoinColumn(name = "permission_id") // ฝั่งนู้น (Permission)
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<MasPermissionEntity> permissions = new HashSet<>();
 }

@@ -66,9 +66,20 @@
 * **Feature:** Multi-vendor Shop Management
 * **Concept:** ระบบจัดการข้อมูลร้านค้า และการจัดการพนักงานภายในร้านสำหรับแพลตฟอร์มแบบหลายผู้ขาย
 * **Checklist:**
-  - [ ] API สร้างร้านค้า (ผูกกับ User เจ้าของร้าน)
-  - [ ] API แก้ไขข้อมูลร้าน (Logo, Description)
-  - [ ] API เพิ่มพนักงานเข้าร้าน (Assign Role ในระดับร้านค้า)
+  - [x] API สร้างร้านค้า (ผูกกับ User เจ้าของร้าน)
+  - [x] API แก้ไขข้อมูลร้าน (Logo, Description)
+  - [x] API เพิ่มพนักงานเข้าร้าน (Assign Role ในระดับร้านค้า)
+  - [x] API ดูรายละเอียดร้านค้า (`GET /shops/{shopId}`)
+  - [x] API ดูร้านค้าของฉัน (`GET /shops/me`) ทั้งร้านที่เป็นเจ้าของและร้านที่เป็นพนักงาน
+  - [x] API ลบร้านค้าแบบ Soft Delete (`DELETE /shops/{shopId}`) โดย set `deleted_at` และปิด `is_active`
+  - [x] API เปิด/ปิดสถานะร้านค้า (`PATCH /shops/{shopId}/status`) แยกจากการลบร้าน
+  - [x] API ดูรายชื่อพนักงานในร้าน (`GET /shops/{shopId}/employees`)
+  - [x] API ลบพนักงานออกจากร้าน (`DELETE /shops/{shopId}/employees/{userId}`) และห้ามลบเจ้าของร้าน
+  - [x] API เปลี่ยน Role ของพนักงาน (`PATCH /shops/{shopId}/employees/{userId}/role`)
+  - [x] กำหนด Slug Policy: ตอนสร้างร้าน generate slug จากชื่อร้าน, ตอนแก้ชื่อร้านไม่เปลี่ยน slug อัตโนมัติ
+  - [x] API แก้ไข slug แยกต่างหาก (`PATCH /shops/{shopId}/slug`) พร้อมตรวจ slug ซ้ำ
+  - [x] เพิ่ม Response DTO สำหรับข้อมูลร้านค้าและพนักงาน ห้ามคืน Entity ตรงๆ
+  - [x] เพิ่ม Business Rules: ตรวจ owner permission, กันเพิ่มพนักงานซ้ำ, ห้าม assign role ที่ไม่เหมาะสม, และห้ามเพิ่ม owner เป็น employee ซ้ำ
 * **Priority:** 🔴 High
 * **Difficulty:** ⚡ Medium
 

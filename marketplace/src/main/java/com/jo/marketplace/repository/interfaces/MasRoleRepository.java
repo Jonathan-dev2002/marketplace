@@ -7,6 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface MasRoleRepository extends JpaRepository<MasRoleEntity, UUID> {
-    Optional<MasRoleEntity>findByNameAndIsSystemDefinedTrue(String name);
 
+    Optional<MasRoleEntity> findByNameAndIsSystemDefinedTrue(String name);
 }
