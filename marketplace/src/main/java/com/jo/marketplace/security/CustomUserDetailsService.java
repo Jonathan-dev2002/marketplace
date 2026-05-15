@@ -1,6 +1,7 @@
 package com.jo.marketplace.security;
 
 import com.jo.marketplace.entity.MasUserEntity;
+import com.jo.marketplace.model.enums.UserStatusEnum;
 import com.jo.marketplace.repository.interfaces.MasUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -25,6 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return User.builder()
                 .username(userEntity.getUsername())
                 .password(userEntity.getPassword())
+                .disabled(!UserStatusEnum.ACTIVE.equals(userEntity.getStatus()))
                 .authorities(Collections.emptyList())
                 .build();
     }

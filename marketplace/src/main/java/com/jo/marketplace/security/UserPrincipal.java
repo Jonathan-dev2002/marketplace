@@ -12,4 +12,5 @@ public class UserPrincipal {
     private UUID userId;
     private String username;
     private List<String> roles;
+    private List<String> authorities;
 }
