@@ -12,6 +12,7 @@
 1. `README.md` - ภาพรวมและ Tech Stack
 2. `database-schema.md` - โครงสร้าง Database DDL ทั้งหมด 24 ตาราง
 3. `tasks.md` - แผนการทำงาน (Backlog)
+4. `BACKEND_STYLE_GUILDE.md` - GUILDE
 
 ## 🎯 3. Core Principles (หลักการทำงานที่คุณต้องยึดถือ)
 เมื่อฉันสั่งให้คุณเขียนโค้ดสำหรับ Task ใดๆ คุณ **"ต้อง"** ปฏิบัติตามกฎเหล่านี้อย่างเคร่งครัด:
