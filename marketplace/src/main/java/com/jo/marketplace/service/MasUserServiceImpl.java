@@ -3,6 +3,8 @@ package com.jo.marketplace.service;
 import com.jo.marketplace.constant.StatusCodeEnums;
 import com.jo.marketplace.entity.MasUserEntity;
 import com.jo.marketplace.exception.BusinessException;
+import com.jo.marketplace.model.dto.request.UpdateUserProfileRequest;
+import com.jo.marketplace.model.dto.response.UserProfileResponse;
 import com.jo.marketplace.repository.interfaces.MasUserRepository;
 import com.jo.marketplace.repository.projection.UserProfileProjection;
 import com.jo.marketplace.service.interfaces.MasUserService;
@@ -10,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -51,15 +56,69 @@ public class MasUserServiceImpl implements MasUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public MasUserEntity getUserById(java.util.UUID id) {
+    public MasUserEntity getUserById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(StatusCodeEnums.NOT_FOUND_404, "ไม่พบข้อมูลผู้ใช้งานในระบบ"));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserProfileProjection getUserProfileById(java.util.UUID id) {
+    public UserProfileProjection getUserProfileById(UUID id) {
         return userRepository.findProfileById(id)
                 .orElseThrow(() -> new BusinessException(StatusCodeEnums.NOT_FOUND_404, "ไม่พบข้อมูลผู้ใช้งานในระบบ"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserProfileResponse getMyProfile(UUID userId) {
+        return toProfileResponse(getUserProfileById(userId));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserProfileResponse updateMyProfile(UUID userId, UpdateUserProfileRequest request) {
+        MasUserEntity user = getUserById(userId);
+
+        if (request.getFirstName() != null) {
+            user.setFirstName(normalizeNullable(request.getFirstName()));
+        }
+
+        if (request.getLastName() != null) {
+            user.setLastName(normalizeNullable(request.getLastName()));
+        }
+
+        if (request.getPhone() != null) {
+            user.setPhone(normalizeNullable(request.getPhone()));
+        }
+
+        MasUserEntity savedUser = userRepository.save(user);
+        return UserProfileResponse.builder()
+                .id(savedUser.getId())
+                .username(savedUser.getUsername())
+                .email(savedUser.getEmail())
+                .firstName(savedUser.getFirstName())
+                .lastName(savedUser.getLastName())
+                .phone(savedUser.getPhone())
+                .status(savedUser.getStatus().name())
+                .build();
+    }
+
+    private UserProfileResponse toProfileResponse(UserProfileProjection userProfile) {
+        return UserProfileResponse.builder()
+                .id(userProfile.getId())
+                .username(userProfile.getUsername())
+                .email(userProfile.getEmail())
+                .firstName(userProfile.getFirstName())
+                .lastName(userProfile.getLastName())
+                .phone(userProfile.getPhone())
+                .status(userProfile.getStatus().name())
+                .build();
+    }
+
+    private String normalizeNullable(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        return value.trim();
     }
 }

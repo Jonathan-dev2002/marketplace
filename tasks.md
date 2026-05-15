@@ -58,9 +58,18 @@
 * **Feature:** User Data Management
 * **Concept:** จัดการข้อมูลส่วนตัวและสมุดที่อยู่สำหรับจัดส่งสินค้า ซึ่งผู้ใช้ 1 คนสามารถมีได้หลายที่อยู่
 * **Checklist:**
-  - [ ] API ดู/แก้ไข Profile
-  - [ ] API CRUD ที่อยู่ (Address)
-  - [ ] Logic การตั้งค่า Default Address
+  - [x] API ดู Profile ของตัวเอง (`GET /api/v1/users/me`)
+  - [x] API แก้ไข Profile ของตัวเอง (`PATCH /api/v1/users/me`)
+  - [x] สร้าง Entity และ Repository สำหรับ Address Book
+  - [x] API ดูรายการที่อยู่ของตัวเอง (`GET /api/v1/users/me/addresses`)
+  - [x] API เพิ่มที่อยู่ (`POST /api/v1/users/me/addresses`)
+  - [x] API ดูรายละเอียดที่อยู่ (`GET /api/v1/users/me/addresses/{addressId}`)
+  - [x] API แก้ไขที่อยู่ (`PATCH /api/v1/users/me/addresses/{addressId}`)
+  - [x] API ลบที่อยู่แบบ Soft Delete (`DELETE /api/v1/users/me/addresses/{addressId}`)
+  - [x] API ตั้งค่า Default Address (`PATCH /api/v1/users/me/addresses/{addressId}/default`)
+  - [x] Logic บังคับให้ผู้ใช้มี Default Address ได้แค่ 1 รายการ
+  - [x] Logic ตั้ง address แรกเป็น default อัตโนมัติ
+  - [x] Business Rules: ห้ามเข้าถึง/แก้ไข/ลบ address ของผู้ใช้อื่น
 * **Priority:** 🔴 High
 * **Difficulty:** 🧊 Easy
 
