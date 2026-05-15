@@ -21,10 +21,17 @@
 * **Feature:** User Authentication & Security
 * **Concept:** ระบบยืนยันตัวตนแบบ Stateless โดยใช้ JSON Web Token พร้อมระบบจัดการ Session ความปลอดภัยสูงผ่าน Redis
 * **Checklist:**
-  - [ ] Implement Login / Register API
-  - [ ] สร้าง JWT Provider (Generate & Validate Token)
-  - [ ] เชื่อมต่อ Redis ทำ Token Blacklist (สำหรับ Logout)
-  - [ ] สร้าง Security Config & Filter Chain
+  - [x] Implement Login / Register API (`POST /api/auth/login`, `POST /api/auth/register`)
+  - [x] สร้าง JWT Provider สำหรับ Generate & Validate Access Token
+  - [x] เพิ่ม Refresh Token Flow (`POST /api/auth/refresh`) พร้อม rotate refresh token เดิม
+  - [x] เชื่อมต่อ Redis ทำ Token Blacklist สำหรับ Logout (`POST /api/auth/logout`)
+  - [x] เพิ่ม `jti` claim ใน JWT เพื่อใช้ revoke token แบบระบุตัวตนได้
+  - [x] สร้าง Security Config & Filter Chain แบบ Stateless
+  - [x] จำกัด public auth endpoint เฉพาะ register/login/refresh และบังคับ auth endpoint ที่เหลือ
+  - [x] Map roles เป็น Spring Security authorities (`ROLE_*`) เพื่อรองรับ `@PreAuthorize`
+  - [x] ตรวจ account status เพื่อบล็อก user ที่ไม่ใช่ `ACTIVE` ทั้งตอน login และตอนใช้ token
+  - [x] เพิ่ม API เปลี่ยนรหัสผ่าน (`POST /api/auth/change-password`)
+  - [x] ปรับ Auth Response ให้คืน `userId`, `roles`, `authorities`, `expiresIn`, `accessToken`, และ `refreshToken`
 * **Priority:** 🔴 High
 * **Difficulty:** ⚡ Medium
 
