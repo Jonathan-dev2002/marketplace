@@ -13,8 +13,23 @@
   - [ ] สร้างโปรเจกต์ Spring Boot (Java 21+)
   - [ ] จัดโครงสร้าง Folder (controller, service, repository, entity, dto, common)
   - [ ] ตั้งค่า Docker Compose (PostgreSQL, Redis, Meilisearch)
+  - [x] Config Redis connection properties สำหรับ token blacklist และ future cache usage
   - [x] ตั้งค่า Swagger (OpenAPI) สำหรับทำ API Docs
 * **Priority:** 🔴 High
+* **Difficulty:** ⚡ Medium
+
+### [EM-021] Media Storage & Cloudinary Configuration
+* **Feature:** File Upload & Media Storage
+* **Concept:** ตั้งค่า Cloudinary สำหรับจัดเก็บไฟล์รูปภาพของระบบ เช่น KYC documents, shop logo, product images และ media อื่นๆ
+* **Checklist:**
+  - [ ] เพิ่ม Cloudinary dependency และ configuration properties (`cloud_name`, `api_key`, `api_secret`)
+  - [ ] สร้าง Cloudinary config bean และ media storage service กลาง
+  - [ ] กำหนด upload folders แยกตาม module เช่น `kyc`, `shops`, `products`
+  - [ ] เพิ่ม validation สำหรับ file type, file size, และ allowed image formats
+  - [ ] เพิ่ม response DTO สำหรับ upload result (`url`, `publicId`, `secureUrl`)
+  - [ ] เพิ่ม delete/replace media helper สำหรับเคสเปลี่ยนรูปหรือยกเลิกเอกสาร
+  - [ ] เพิ่ม environment variable documentation สำหรับ Cloudinary ใน README
+* **Priority:** 🟡 Medium
 * **Difficulty:** ⚡ Medium
 
 ### [EM-002] Advanced Authentication (JWT)
