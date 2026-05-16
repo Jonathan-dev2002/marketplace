@@ -1,6 +1,5 @@
 package com.jo.marketplace.security;
 
-import com.jo.marketplace.entity.MasUserEntity;
 import com.jo.marketplace.model.enums.UserStatusEnum;
 import com.jo.marketplace.repository.interfaces.MasUserRepository;
 import com.jo.marketplace.service.interfaces.TokenBlacklistService;
@@ -44,8 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 io.jsonwebtoken.Claims claims = jwtProvider.getClaimsFromToken(jwt);
                 UUID userId = UUID.fromString(claims.getSubject());
                 String username = claims.get("username", String.class);
-                List<String> roles = claims.get("roles", List.class);
-                List<String> authorities = claims.get("authorities", List.class);
+                List<String> roles = getStringListClaim(claims, "roles");
+                List<String> authorities = getStringListClaim(claims, "authorities");
 
                 if (!isActiveUser(userId)) {
                     filterChain.doFilter(request, response);
@@ -82,9 +81,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isActiveUser(UUID userId) {
-        return userRepository.findById(userId)
-                .map(MasUserEntity::getStatus)
-                .filter(UserStatusEnum.ACTIVE::equals)
-                .isPresent();
+        return userRepository.existsByIdAndStatus(userId, UserStatusEnum.ACTIVE);
+    }
+
+    private List<String> getStringListClaim(io.jsonwebtoken.Claims claims, String claimName) {
+        Object claimValue = claims.get(claimName);
+        if (!(claimValue instanceof List<?> values)) {
+            return List.of();
+        }
+
+        return values.stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .toList();
     }
 }
