@@ -125,9 +125,22 @@
 * **Feature:** Product Categories
 * **Concept:** ระบบหมวดหมู่สินค้าที่สามารถซ้อนกันได้แบบไม่จำกัดชั้น (Tree Structure)
 * **Checklist:**
-  - [ ] สร้าง Entity `Category` แบบ Self-referencing (`parent_id`)
-  - [ ] API CRUD หมวดหมู่สินค้า
-  - [ ] API Get Category Tree (ทำ Caching ด้วย Redis)
+  - [ ] สร้าง Entity `CategoryEntity` แบบ self-referencing (`parent`, `children`)
+  - [ ] สร้าง Repository สำหรับ query category active/non-deleted
+  - [ ] API สร้างหมวดหมู่ (`POST /api/v1/categories`)
+  - [ ] API ดูรายละเอียดหมวดหมู่ (`GET /api/v1/categories/{categoryId}`)
+  - [ ] API แก้ไขหมวดหมู่ (`PATCH /api/v1/categories/{categoryId}`)
+  - [ ] API ลบหมวดหมู่แบบ soft delete (`DELETE /api/v1/categories/{categoryId}`)
+  - [ ] API เปิด/ปิดหมวดหมู่ (`PATCH /api/v1/categories/{categoryId}/status`)
+  - [ ] API ดึง category tree (`GET /api/v1/categories/tree`)
+  - [ ] API ดึง children ของหมวดหมู่ (`GET /api/v1/categories/{categoryId}/children`)
+  - [ ] เพิ่ม slug policy: generate slug จากชื่อ และตรวจ slug ซ้ำ
+  - [ ] เพิ่ม rule กัน circular reference เช่น ห้ามย้าย category ไปอยู่ใต้ลูกของตัวเอง
+  - [ ] เพิ่ม rule ห้ามลบ category ที่ยังมี child หรือ product ผูกอยู่
+  - [ ] เพิ่ม Redis cache สำหรับ category tree และ clear cache เมื่อ create/update/delete/status change
+  - [ ] เพิ่ม request/response DTO และ validation
+  - [ ] เพิ่ม status code enum สำหรับ category success/error cases
+  - [ ] เพิ่ม admin/permission guard สำหรับ create/update/delete category
 * **Priority:** 🔴 High
 * **Difficulty:** ⚡ Medium
 
