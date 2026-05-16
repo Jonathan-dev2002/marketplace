@@ -80,9 +80,19 @@
 * **Feature:** Identity Verification
 * **Concept:** ระบบยืนยันตัวตนสำหรับผู้ที่จะเปิดร้านค้า โดยให้อัปโหลดภาพเอกสารเพื่อให้ระบบหลังบ้านตรวจสอบ
 * **Checklist:**
-  - [ ] สร้าง Table `user_verifications`
-  - [ ] API Upload รูปบัตรประชาชน
-  - [ ] Admin API สำหรับกด Approve/Reject เปลี่ยนสถานะผู้ใช้
+  - [ ] สร้าง Entity และ Table `user_verifications`
+  - [ ] สร้าง enum `VerificationStatusEnum` (`PENDING`, `APPROVED`, `REJECTED`)
+  - [ ] API ส่งคำขอ KYC ของ user (`POST /api/v1/verifications/me`)
+  - [ ] API ดูสถานะ KYC ของตัวเอง (`GET /api/v1/verifications/me`)
+  - [ ] API แก้ไข/ส่ง KYC ใหม่เมื่อถูก reject (`PATCH /api/v1/verifications/me`)
+  - [ ] API Upload รูปบัตรประชาชนและรูปยืนยันตัวตน
+  - [ ] Admin API list คำขอ KYC (`GET /api/v1/admin/verifications`)
+  - [ ] Admin API ดูรายละเอียด KYC (`GET /api/v1/admin/verifications/{verificationId}`)
+  - [ ] Admin API approve/reject KYC (`PATCH /api/v1/admin/verifications/{verificationId}/status`)
+  - [ ] เพิ่ม business rules: ห้าม submit ซ้ำตอน pending, ห้ามแก้เมื่อ approved, reject ต้องมีเหตุผล
+  - [ ] เพิ่ม request/response DTO และ validation สำหรับข้อมูล KYC
+  - [ ] เพิ่ม status code enum สำหรับ KYC success/error cases
+  - [ ] เพิ่ม permission/admin guard สำหรับ KYC review endpoints
 * **Priority:** 🟡 Medium
 * **Difficulty:** 🧊 Easy
 
