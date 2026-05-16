@@ -275,6 +275,26 @@
 * **Priority:** 🟢 Low
 * **Difficulty:** ⚡ Medium
 
+### [EM-022] Query Optimization & Backend Style Refactor
+* **Feature:** Backend Code Quality & Query Optimization
+* **Concept:** ปรับ service/repository ให้ตรงกับ `BACKEND_STYLE_GUILDE.md` โดยลดการโหลด Entity เกินจำเป็น, ใช้ projection/update query เมื่อเหมาะสม, และลบ dead code
+* **Checklist:**
+  - [ ] ปรับ `deactivateMyAccount()` ให้ update เฉพาะ `status` ด้วย repository update query แทนการโหลด `MasUserEntity` ทั้งก้อน
+  - [ ] ปรับ `updateShopStatus()` ให้ update เฉพาะ `isActive` ด้วย repository update query
+  - [ ] ปรับ `softDeleteShop()` ให้ update เฉพาะ `isActive` และ `deletedAt` ด้วย repository update query
+  - [ ] ประเมิน `updateShopSlug()` ว่าควรใช้ update query เฉพาะ field หรือคง entity update เพื่อ validation flow
+  - [ ] ปรับ `assignEmployee()` ให้ใช้ `existsById(...)` หรือ `existsByIdAndStatus(...)` แทนการโหลด user ทั้ง entity เมื่อใช้แค่ตรวจ existence/id
+  - [ ] ปรับ `getMyShops()` ให้ query เฉพาะ shop ที่ต้องใช้ และไม่ fetch role ที่ไม่ได้ใช้
+  - [ ] ปรับ `getEmployees()` ให้ลดการโหลด shop entity ทั้งก้อนเพื่อใช้แค่ `ownerId` หรือใช้ projection/query เดียวสำหรับ employee response
+  - [ ] ประเมิน `deleteAddress()` และ `setDefaultAddress()` ว่าสามารถใช้ update query เฉพาะ field ได้โดยไม่เสีย business rule/default-address consistency
+  - [ ] ประเมิน `lockUserAddressBook()` ให้ใช้ lock query ที่เลือกเฉพาะ id แทนการโหลด user entity ทั้งก้อน
+  - [ ] ลบ dead code เช่น `validateShopOwner()` ถ้าไม่มี usage หลังย้ายไปใช้ permission guard
+  - [ ] แก้ hardcoded/encoding error messages ใน `MasUserServiceImpl` ให้ใช้ `StatusCodeEnums` อย่างสม่ำเสมอ
+  - [ ] ตรวจ permission string ใน `@PreAuthorize` และวางแผนย้ายเป็น constants/custom annotation ในอนาคต
+  - [ ] ตรวจ `StatusCodeEnums` ภาษาไทยที่ encoding เพี้ยน และปรับให้ response message อ่านได้ถูกต้อง
+* **Priority:** 🟡 Medium
+* **Difficulty:** ⚡ Medium
+
 ### [EM-018] Wishlist Feature
 * **Feature:** User Favorites
 * **Concept:** ระบบรายการสินค้าโปรดที่ผู้ใช้สามารถกดบันทึกเก็บไว้ดูภายหลังได้
