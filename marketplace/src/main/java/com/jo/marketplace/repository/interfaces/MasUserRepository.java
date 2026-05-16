@@ -1,6 +1,7 @@
 package com.jo.marketplace.repository.interfaces;
 
 import com.jo.marketplace.entity.MasUserEntity;
+import com.jo.marketplace.model.enums.UserStatusEnum;
 import com.jo.marketplace.repository.projection.UserProfileProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -18,4 +19,6 @@ public interface MasUserRepository extends JpaRepository<MasUserEntity, UUID> {
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    boolean existsByIdAndStatus(UUID id, UserStatusEnum status);
 }

@@ -21,17 +21,19 @@
 * **Feature:** User Authentication & Security
 * **Concept:** ระบบยืนยันตัวตนแบบ Stateless โดยใช้ JSON Web Token พร้อมระบบจัดการ Session ความปลอดภัยสูงผ่าน Redis
 * **Checklist:**
-  - [x] Implement Login / Register API (`POST /api/auth/login`, `POST /api/auth/register`)
+  - [x] Implement Login / Register API (`POST /api/v1/auth/login`, `POST /api/v1/auth/register`)
   - [x] สร้าง JWT Provider สำหรับ Generate & Validate Access Token
-  - [x] เพิ่ม Refresh Token Flow (`POST /api/auth/refresh`) พร้อม rotate refresh token เดิม
-  - [x] เชื่อมต่อ Redis ทำ Token Blacklist สำหรับ Logout (`POST /api/auth/logout`)
+  - [x] เพิ่ม Refresh Token Flow (`POST /api/v1/auth/refresh`) พร้อม rotate refresh token เดิม
+  - [x] เชื่อมต่อ Redis ทำ Token Blacklist สำหรับ Logout (`POST /api/v1/auth/logout`)
   - [x] เพิ่ม `jti` claim ใน JWT เพื่อใช้ revoke token แบบระบุตัวตนได้
   - [x] สร้าง Security Config & Filter Chain แบบ Stateless
   - [x] จำกัด public auth endpoint เฉพาะ register/login/refresh และบังคับ auth endpoint ที่เหลือ
   - [x] Map roles เป็น Spring Security authorities (`ROLE_*`) เพื่อรองรับ `@PreAuthorize`
   - [x] ตรวจ account status เพื่อบล็อก user ที่ไม่ใช่ `ACTIVE` ทั้งตอน login และตอนใช้ token
-  - [x] เพิ่ม API เปลี่ยนรหัสผ่าน (`POST /api/auth/change-password`)
+  - [x] เพิ่ม API เปลี่ยนรหัสผ่าน (`POST /api/v1/auth/change-password`)
   - [x] ปรับ Auth Response ให้คืน `userId`, `roles`, `authorities`, `expiresIn`, `accessToken`, และ `refreshToken`
+  - [x] ปรับ JWT Filter ให้ตรวจ account status ด้วย query เฉพาะ `existsByIdAndStatus(...)`
+  - [ ] Future: เพิ่ม cache สำหรับ account status lookup ใน JWT Filter พร้อม invalidation เมื่อ user ถูก deactivate/suspend/ban
 * **Priority:** 🔴 High
 * **Difficulty:** ⚡ Medium
 
