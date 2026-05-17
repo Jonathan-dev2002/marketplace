@@ -123,6 +123,34 @@ CREATE TABLE shops (
 -- เพิ่ม FK ให้ user_shop_roles หลังจากสร้างตาราง shops
 ALTER TABLE user_shop_roles ADD CONSTRAINT fk_usr_shop FOREIGN KEY (shop_id) REFERENCES shops(id);
 
+-- 8.1 ห้องแชทภายในร้านค้า (Shop Chat Rooms)
+CREATE TABLE shop_chat_rooms (
+    id UUID PRIMARY KEY,
+    shop_id UUID NOT NULL REFERENCES shops(id),
+    name VARCHAR(100) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    created_by UUID,
+    updated_by UUID,
+    deleted_at TIMESTAMP
+);
+
+-- 8.2 ข้อความแชทภายในร้านค้า (Shop Chat Messages)
+CREATE TABLE shop_chat_messages (
+    id UUID PRIMARY KEY,
+    shop_id UUID NOT NULL REFERENCES shops(id),
+    room_id UUID NOT NULL REFERENCES shop_chat_rooms(id),
+    sender_id UUID NOT NULL REFERENCES users(id),
+    message_type VARCHAR(20) DEFAULT 'TEXT' NOT NULL,
+    content VARCHAR(2000) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    created_by UUID,
+    updated_by UUID,
+    deleted_at TIMESTAMP
+);
+
 -- 9. หมวดหมู่สินค้า (Categories)
 CREATE TABLE categories (
     id UUID PRIMARY KEY,
@@ -355,8 +383,12 @@ CREATE INDEX idx_products_shop_id ON products(shop_id);
 CREATE INDEX idx_products_category_id ON products(category_id);
 CREATE INDEX idx_product_skus_product_id ON product_skus(product_id);
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX idx_shop_chat_rooms_shop_id ON shop_chat_rooms(shop_id);
+CREATE INDEX idx_shop_chat_messages_room_id ON shop_chat_messages(room_id);
 
 -- 2. สร้าง Partial Index สำหรับข้ามข้อมูลที่ถูก Soft Delete ไปแล้ว (ทำให้ Index เล็กและเร็ว)
 CREATE INDEX idx_active_products ON products(shop_id) WHERE deleted_at IS NULL AND is_active = TRUE;
 CREATE INDEX idx_active_skus ON product_skus(product_id) WHERE deleted_at IS NULL AND is_active = TRUE;
 CREATE INDEX idx_active_shops ON shops(owner_id) WHERE deleted_at IS NULL AND is_active = TRUE;
+CREATE INDEX idx_active_shop_chat_rooms ON shop_chat_rooms(shop_id) WHERE deleted_at IS NULL AND is_active = TRUE;
+CREATE INDEX idx_active_shop_chat_messages ON shop_chat_messages(room_id, created_at) WHERE deleted_at IS NULL;

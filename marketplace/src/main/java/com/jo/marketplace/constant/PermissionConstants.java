@@ -16,6 +16,9 @@ public final class PermissionConstants {
     public static final String SHOP_EMPLOYEE_MANAGE = "SHOP_EMPLOYEE_MANAGE";
     public static final String SHOP_ROLE_VIEW = "SHOP_ROLE_VIEW";
     public static final String SHOP_ROLE_MANAGE = "SHOP_ROLE_MANAGE";
+    public static final String SHOP_CHAT_VIEW = "SHOP_CHAT_VIEW";
+    public static final String SHOP_CHAT_SEND = "SHOP_CHAT_SEND";
+    public static final String SHOP_CHAT_MANAGE = "SHOP_CHAT_MANAGE";
     public static final String PRODUCT_CREATE = "PRODUCT_CREATE";
     public static final String PRODUCT_UPDATE = "PRODUCT_UPDATE";
     public static final String PRODUCT_DELETE = "PRODUCT_DELETE";
@@ -31,6 +34,9 @@ public final class PermissionConstants {
             SHOP_EMPLOYEE_MANAGE,
             SHOP_ROLE_VIEW,
             SHOP_ROLE_MANAGE,
+            SHOP_CHAT_VIEW,
+            SHOP_CHAT_SEND,
+            SHOP_CHAT_MANAGE,
             PRODUCT_CREATE,
             PRODUCT_UPDATE,
             PRODUCT_DELETE,

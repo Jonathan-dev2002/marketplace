@@ -299,18 +299,18 @@
 * **Feature:** Real-time Shop Employee Messaging
 * **Concept:** ระบบแชทภายในร้านสำหรับ owner และ employee ใน shop เดียวกัน โดยใช้ WebSocket/STOMP และบันทึกข้อความลงฐานข้อมูล
 * **Checklist:**
-  - [ ] เพิ่ม dependency `spring-boot-starter-websocket`
-  - [ ] Config WebSocket/STOMP endpoint (`/ws`) และ message broker
-  - [ ] สร้าง Entity `ShopChatRoom` และ `ShopChatMessage`
-  - [ ] เพิ่ม permission `SHOP_CHAT_VIEW`, `SHOP_CHAT_SEND`, `SHOP_CHAT_MANAGE`
-  - [ ] API list/create/manage chat rooms ในร้าน (`/api/v1/shops/{shopId}/chat/rooms`)
-  - [ ] API ดูประวัติข้อความแบบ pagination (`GET /api/v1/shops/{shopId}/chat/rooms/{roomId}/messages`)
-  - [ ] WebSocket send message endpoint เช่น `/app/shops/{shopId}/chat/rooms/{roomId}/messages`
-  - [ ] WebSocket subscribe topic แยกตาม `shopId` และ `roomId`
-  - [ ] ตรวจ JWT และ shop permission ตอน WebSocket connect/send
-  - [ ] ตรวจว่า room อยู่ใน shop เดียวกัน และ user เป็น owner/employee ของ shop นั้น
-  - [ ] บันทึก message ลง database ก่อน broadcast
-  - [ ] เพิ่ม validation เช่น message length, message type, และ empty content
+  - [x] เพิ่ม dependency `spring-boot-starter-websocket`
+  - [x] Config WebSocket/STOMP endpoint (`/ws`) และ message broker
+  - [x] สร้าง Entity `ShopChatRoom` และ `ShopChatMessage`
+  - [x] เพิ่ม permission `SHOP_CHAT_VIEW`, `SHOP_CHAT_SEND`, `SHOP_CHAT_MANAGE`
+  - [x] API list/create/manage chat rooms ในร้าน (`/api/v1/shops/{shopId}/chat/rooms`)
+  - [x] API ดูประวัติข้อความแบบ pagination (`GET /api/v1/shops/{shopId}/chat/rooms/{roomId}/messages`)
+  - [x] WebSocket send message endpoint เช่น `/app/shops/{shopId}/chat/rooms/{roomId}/messages`
+  - [x] WebSocket subscribe topic แยกตาม `shopId` และ `roomId`
+  - [x] ตรวจ JWT และ shop permission ตอน WebSocket connect/send
+  - [x] ตรวจว่า room อยู่ใน shop เดียวกัน และ user เป็น owner/employee ของ shop นั้น
+  - [x] บันทึก message ลง database ก่อน broadcast
+  - [x] เพิ่ม validation เช่น message length, message type, และ empty content
   - [ ] เพิ่ม unread count/read receipt เป็น future enhancement
 * **Priority:** 🟡 Medium
 * **Difficulty:** 🔥 Hard
