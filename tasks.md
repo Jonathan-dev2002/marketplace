@@ -312,6 +312,13 @@
   - [x] บันทึก message ลง database ก่อน broadcast
   - [x] เพิ่ม validation เช่น message length, message type, และ empty content
   - [ ] เพิ่ม unread count/read receipt เป็น future enhancement
+  - [ ] Add unread count and read receipt tracking per room/user
+  - [ ] Add structured WebSocket error responses via user-specific queues such as `/user/queue/errors`
+  - [ ] Add room member/visibility rules for private rooms, role-based rooms, or team-specific rooms
+  - [ ] Add message edit/delete support with soft delete and permission rules
+  - [ ] Add real database migration for `shop_chat_rooms` and `shop_chat_messages`
+  - [ ] Add chat-specific limits and validation such as message rate limits and image payload rules
+  - [ ] Define frontend reconnect and resubscribe flow for WebSocket disconnects and token refresh
 * **Priority:** 🟡 Medium
 * **Difficulty:** 🔥 Hard
 
