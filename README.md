@@ -1,6 +1,6 @@
 # E-Commerce Marketplace
 
-"E-Commerce Marketplace is a multi-vendor backend API that supports user authentication, role-based access control, shop management, and the foundation for product catalog, inventory, order, payment, and analytics features. It is developed with **Java 21** and **Spring Boot 3**, using **PostgreSQL** as the primary database, **Redis** for caching/session support, and **Meilisearch** for future product search capabilities."
+"E-Commerce Marketplace is a multi-vendor backend API for authentication, shop management, shop-level permissions, user profiles, address books, and internal shop chat. It is developed with **Java 21** and **Spring Boot 3**, using **PostgreSQL** as the primary database, **Redis** for token blacklist support, and **Meilisearch** for future product search capabilities."
 
 ## Table of Contents
 
@@ -25,11 +25,12 @@
 - Dynamic role-based access control with shop-level permissions
 - User profile management
 - User address book management with default address rules
-- Address book management as a separate API module
 - Multi-vendor shop management
 - Shop employee assignment and role management
 - Custom shop roles and role permission assignment
-- Soft delete support for shops
+- Soft delete support for shops and addresses
+- Internal shop chat with REST room management and WebSocket/STOMP messaging
+- WebSocket JWT authentication and subscription authorization
 - Docker Compose setup for PostgreSQL, Redis, and Meilisearch
 - API documentation with Swagger UI
 - Modular layered backend structure based on controller, service, repository, entity, and DTO layers
@@ -40,6 +41,7 @@
 - **Backend Framework:** Spring Boot 3.x
 - **Build Tool:** Maven
 - **Security:** Spring Security, JSON Web Tokens (JWT)
+- **Real-time Messaging:** Spring WebSocket, STOMP
 - **Database:** PostgreSQL
 - **Caching:** Redis
 - **Search Engine:** Meilisearch
@@ -55,23 +57,23 @@ The backend follows a modular layered architecture:
 
 ```text
 com.jo.marketplace
-├── common
-├── config
-├── constant
-├── controller
-├── entity
-├── exception
-├── model
-│   ├── dto
-│   │   ├── request
-│   │   └── response
-│   └── enums
-├── repository
-├── security
-├── service
-│   └── interfaces
-├── specification
-└── utils
+|-- common
+|-- config
+|-- constant
+|-- controller
+|-- entity
+|-- exception
+|-- model
+|   |-- dto
+|   |   |-- request
+|   |   `-- response
+|   `-- enums
+|-- repository
+|-- security
+|-- service
+|   `-- interfaces
+|-- specification
+`-- utils
 ```
 
 Request flow:
@@ -84,6 +86,17 @@ HTTP Request
 -> Repository
 -> Database or External Service
 -> Response Wrapper
+```
+
+WebSocket chat flow:
+
+```text
+STOMP CONNECT /ws
+-> JWT authentication
+-> SUBSCRIBE authorization
+-> SEND /app/shops/{shopId}/chat/rooms/{roomId}/messages
+-> Persist message
+-> Broadcast to /topic/shops/{shopId}/chat/rooms/{roomId}
 ```
 
 ## Prerequisites
@@ -198,11 +211,11 @@ http://localhost:8080/api-docs
 
 ### Authentication
 
-- `POST /api/auth/register` - Register a new user.
-- `POST /api/auth/login` - Login with username/email and password.
-- `POST /api/auth/logout` - Logout and blacklist the current access token.
-- `POST /api/auth/refresh` - Rotate a refresh token and issue a new token pair.
-- `POST /api/auth/change-password` - Change the current user's password.
+- `POST /api/v1/auth/register` - Register a new user.
+- `POST /api/v1/auth/login` - Login with username/email and password.
+- `POST /api/v1/auth/logout` - Logout and blacklist the current access token.
+- `POST /api/v1/auth/refresh` - Rotate a refresh token and issue a new token pair.
+- `POST /api/v1/auth/change-password` - Change the current user's password.
 
 ### Users
 
@@ -228,16 +241,36 @@ http://localhost:8080/api-docs
 - `PATCH /api/v1/shops/{shopId}/status` - Update shop active status.
 - `PATCH /api/v1/shops/{shopId}/slug` - Update shop slug.
 - `DELETE /api/v1/shops/{shopId}` - Soft delete a shop.
+
+### Shop Employees
+
 - `GET /api/v1/shops/{shopId}/employees` - List shop employees.
 - `POST /api/v1/shops/{shopId}/employees` - Assign an employee to a shop.
 - `DELETE /api/v1/shops/{shopId}/employees/{userId}` - Remove an employee from a shop.
 - `PATCH /api/v1/shops/{shopId}/employees/{userId}/role` - Change an employee's shop role.
+
+### Shop Roles and Permissions
+
 - `GET /api/v1/shops/{shopId}/roles` - List system and custom roles available for a shop.
 - `POST /api/v1/shops/{shopId}/roles` - Create a custom shop role.
 - `PATCH /api/v1/shops/{shopId}/roles/{roleId}` - Update a custom shop role.
 - `DELETE /api/v1/shops/{shopId}/roles/{roleId}` - Delete a custom shop role.
 - `PUT /api/v1/shops/{shopId}/roles/{roleId}/permissions` - Replace role permissions.
 - `GET /api/v1/shops/{shopId}/permissions/me` - List the current user's permissions in a shop.
+
+### Shop Chat
+
+- `GET /api/v1/shops/{shopId}/chat/rooms` - List chat rooms in a shop.
+- `POST /api/v1/shops/{shopId}/chat/rooms` - Create a chat room.
+- `PATCH /api/v1/shops/{shopId}/chat/rooms/{roomId}` - Update a chat room.
+- `DELETE /api/v1/shops/{shopId}/chat/rooms/{roomId}` - Soft delete a chat room.
+- `GET /api/v1/shops/{shopId}/chat/rooms/{roomId}/messages` - Get paged chat history.
+
+### WebSocket
+
+- `GET /ws` - WebSocket/STOMP handshake endpoint.
+- `SEND /app/shops/{shopId}/chat/rooms/{roomId}/messages` - Send a chat message.
+- `SUBSCRIBE /topic/shops/{shopId}/chat/rooms/{roomId}` - Receive real-time chat messages for a room.
 
 ## Contact
 
