@@ -1,6 +1,6 @@
 # E-Commerce Marketplace
 
-"E-Commerce Marketplace is a multi-vendor backend API for authentication, shop management, shop-level permissions, user profiles, address books, and internal shop chat. It is developed with **Java 21** and **Spring Boot 3**, using **PostgreSQL** as the primary database, **Redis** for token blacklist support, and **Meilisearch** for future product search capabilities."
+"E-Commerce Marketplace is a multi-vendor backend API for authentication, shop management, shop-level permissions, user profiles, address books, and internal shop chat. It is developed with **Java 21** and **Spring Boot 3**, using **PostgreSQL** as the primary database, **Redis** for token blacklist support, **Kafka** for event publishing, and **Meilisearch** for future product search capabilities."
 
 ## Table of Contents
 
@@ -31,7 +31,7 @@
 - Soft delete support for shops and addresses
 - Internal shop chat with REST room management and WebSocket/STOMP messaging
 - WebSocket JWT authentication and subscription authorization
-- Docker Compose setup for PostgreSQL, Redis, and Meilisearch
+- Docker Compose setup for PostgreSQL, Redis, Kafka, and Meilisearch
 - API documentation with Swagger UI
 - Modular layered backend structure based on controller, service, repository, entity, and DTO layers
 
@@ -44,6 +44,7 @@
 - **Real-time Messaging:** Spring WebSocket, STOMP
 - **Database:** PostgreSQL
 - **Caching:** Redis
+- **Event Broker:** Kafka
 - **Search Engine:** Meilisearch
 - **Persistence:** Spring Data JPA
 - **Validation:** Jakarta Validation
@@ -106,6 +107,7 @@ STOMP CONNECT /ws
 - Docker and Docker Compose
 - PostgreSQL instance, if not using Docker Compose
 - Redis instance, if not using Docker Compose
+- Kafka instance, if not using Docker Compose
 - Meilisearch instance, if not using Docker Compose
 
 ## Installation
@@ -153,6 +155,18 @@ DB_PASSWORD=secretpassword
 REDIS_HOST=localhost
 REDIS_PORT=6379
 
+# Kafka
+KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+KAFKA_CONSUMER_GROUP_ID=marketplace-api
+KAFKA_TOPIC_SHOP_CREATED=shop-created
+
+# Outbox Publisher
+OUTBOX_PUBLISHER_ENABLED=true
+OUTBOX_PUBLISH_INTERVAL_MS=5000
+OUTBOX_BATCH_SIZE=50
+OUTBOX_MAX_RETRY_COUNT=5
+OUTBOX_SEND_TIMEOUT_MS=10000
+
 # JWT
 JWT_SECRET=your_base64_encoded_jwt_secret
 
@@ -166,7 +180,7 @@ ADMIN_LAST_NAME=Administrator
 
 ## Running the Application
 
-1. **Start PostgreSQL, Redis, and Meilisearch**
+1. **Start PostgreSQL, Redis, Kafka, and Meilisearch**
 
    ```bash
    docker compose up -d
@@ -191,6 +205,7 @@ Default service ports:
 - Backend API: `http://localhost:8080`
 - PostgreSQL: `localhost:5433`
 - Redis: `localhost:6379`
+- Kafka: `localhost:9092`
 - Meilisearch: `localhost:7700`
 
 ## API Documentation

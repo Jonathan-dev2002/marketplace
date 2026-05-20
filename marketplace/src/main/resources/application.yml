@@ -25,6 +25,19 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
 
+  # Kafka Connection
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:marketplace-api}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
   # Performance Tuning (Java 21 Virtual Threads)
   threads:
     virtual:
@@ -44,6 +57,16 @@ jwt:
   refresh-expiration-ms: 604800000
 
 app:
+  kafka:
+    topics:
+      shop-created: ${KAFKA_TOPIC_SHOP_CREATED:shop-created}
+  outbox:
+    publisher:
+      enabled: ${OUTBOX_PUBLISHER_ENABLED:true}
+      publish-interval-ms: ${OUTBOX_PUBLISH_INTERVAL_MS:5000}
+      batch-size: ${OUTBOX_BATCH_SIZE:50}
+      max-retry-count: ${OUTBOX_MAX_RETRY_COUNT:5}
+      send-timeout-ms: ${OUTBOX_SEND_TIMEOUT_MS:10000}
   admin:
     username: ${ADMIN_USERNAME:system_admin}
     email: ${ADMIN_EMAIL:admin@marketplace.com}

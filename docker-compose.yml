@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  # 🗄️ PostgreSQL Database
+  # PostgreSQL Database
   postgres:
-    image: postgres:16-alpine # ใช้เวอร์ชัน Alpine เพื่อให้ Image มีขนาดเล็กและเบา
+    image: postgres:16-alpine
     container_name: marketplace-postgres
     ports:
       - "5433:5432"
@@ -12,10 +12,10 @@ services:
       POSTGRES_PASSWORD: secretpassword
       POSTGRES_DB: marketplace_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Mount volume ป้องกันข้อมูลหายเมื่อปิด Container
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  # 🚀 Redis Cache
+  # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: marketplace-redis
@@ -25,21 +25,43 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
-  # 🔍 Meilisearch Engine
+  # Meilisearch Engine
   meilisearch:
     image: getmeili/meilisearch:v1.6
     container_name: marketplace-meilisearch
     ports:
       - "7700:7700"
     environment:
-      - MEILI_MASTER_KEY=masterKey1234567890 # คีย์สำหรับเชื่อมต่อ API ห้ามลืมเด็ดขาด!
+      - MEILI_MASTER_KEY=masterKey1234567890
       - MEILI_ENV=development
     volumes:
       - meilisearch_data:/meili_data
     restart: unless-stopped
 
-# ประกาศ Volumes เพื่อเก็บรักษาข้อมูลให้อยู่ถาวร
+  # Kafka Event Broker
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: marketplace-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    volumes:
+      - kafka_data:/tmp/kraft-combined-logs
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
   meilisearch_data:
+  kafka_data:

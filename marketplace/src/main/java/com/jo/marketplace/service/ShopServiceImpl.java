@@ -14,13 +14,16 @@ import com.jo.marketplace.model.dto.request.UpdateShopSlugRequest;
 import com.jo.marketplace.model.dto.request.UpdateShopStatusRequest;
 import com.jo.marketplace.model.dto.response.ShopEmployeeResponse;
 import com.jo.marketplace.model.dto.response.ShopResponse;
+import com.jo.marketplace.model.event.ShopCreatedEvent;
 import com.jo.marketplace.repository.interfaces.MasRoleRepository;
 import com.jo.marketplace.repository.interfaces.MasShopRepository;
 import com.jo.marketplace.repository.interfaces.MasUserRepository;
 import com.jo.marketplace.repository.interfaces.MasUserShopRoleRepository;
+import com.jo.marketplace.service.interfaces.OutboxEventService;
 import com.jo.marketplace.service.interfaces.ShopService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -31,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.jo.marketplace.constant.EventConstants.SHOP;
+import static com.jo.marketplace.constant.EventConstants.SHOP_CREATED;
 import static com.jo.marketplace.constant.StatusCodeEnums.*;
 import static com.jo.marketplace.constant.ValidationPatterns.MULTIPLE_SPACES_PATTERN;
 import static com.jo.marketplace.constant.ValidationPatterns.SLUG_ALLOWED_CHARS_PATTERN;
@@ -45,6 +50,10 @@ public class ShopServiceImpl implements ShopService {
     private final MasRoleRepository roleRepository;
     private final MasUserRepository userRepository;
     private final MasUserShopRoleRepository userShopRoleRepository;
+    private final OutboxEventService outboxEventService;
+
+    @Value("${app.kafka.topics.shop-created}")
+    private String shopCreatedTopic;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -76,6 +85,7 @@ public class ShopServiceImpl implements ShopService {
         ownerRole.setRoleId(sellerRole.getId());
 
         userShopRoleRepository.save(ownerRole);
+        saveShopCreatedEvent(savedShop);
 
         log.info("Shop created successfully with slug: {}", slug);
     }
@@ -297,6 +307,27 @@ public class ShopServiceImpl implements ShopService {
         String slug = name.toLowerCase().trim();
         slug = MULTIPLE_SPACES_PATTERN.matcher(slug).replaceAll("-");
         return SLUG_ALLOWED_CHARS_PATTERN.matcher(slug).replaceAll("");
+    }
+
+    private void saveShopCreatedEvent(MasShopEntity shop) {
+        ShopCreatedEvent event = new ShopCreatedEvent(
+                shop.getId(),
+                shop.getOwnerId(),
+                shop.getName(),
+                shop.getSlug(),
+                shop.getDescription(),
+                shop.getLogoUrl(),
+                LocalDateTime.now()
+        );
+
+        outboxEventService.saveEvent(
+                shopCreatedTopic,
+                shop.getId().toString(),
+                SHOP_CREATED,
+                SHOP,
+                shop.getId(),
+                event
+        );
     }
 
     private void validateSlug(String slug) {
