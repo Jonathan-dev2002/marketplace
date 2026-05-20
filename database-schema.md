@@ -369,8 +369,21 @@ CREATE TABLE audit_logs (
     old_value JSONB,
     new_value JSONB,
     ip_address VARCHAR(50),
+    event_type VARCHAR(100),
+    event_id UUID,
+    topic VARCHAR(150),
+    message_key VARCHAR(150),
+    source VARCHAR(100),
+    processed_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
+CREATE INDEX idx_audit_logs_resource ON audit_logs(resource_name, resource_id);
+CREATE INDEX idx_audit_logs_action_created_at ON audit_logs(action, created_at);
+CREATE UNIQUE INDEX uq_audit_logs_event_id
+ON audit_logs(event_id)
+WHERE event_id IS NOT NULL;
 
 -- ==========================================
 -- ⚡ Performance Tuning: Foreign Key & Partial Indexes
