@@ -31,6 +31,7 @@
 - Soft delete support for shops and addresses
 - Internal shop chat with REST room management and WebSocket/STOMP messaging
 - WebSocket JWT authentication and subscription authorization
+- Kafka outbox event publishing with a ShopCreated audit log consumer
 - Docker Compose setup for PostgreSQL, Redis, Kafka, and Meilisearch
 - API documentation with Swagger UI
 - Modular layered backend structure based on controller, service, repository, entity, and DTO layers
