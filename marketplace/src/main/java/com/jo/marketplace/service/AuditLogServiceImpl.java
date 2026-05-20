@@ -3,6 +3,7 @@ package com.jo.marketplace.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jo.marketplace.entity.AuditLogEntity;
 import com.jo.marketplace.model.event.AuditEventMetadata;
+import com.jo.marketplace.model.event.AuditLogRecord;
 import com.jo.marketplace.model.event.ShopCreatedEvent;
 import com.jo.marketplace.repository.interfaces.AuditLogRepository;
 import com.jo.marketplace.service.interfaces.AuditLogService;
@@ -25,27 +26,59 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void recordShopCreated(ShopCreatedEvent event, AuditEventMetadata metadata) {
-        if (metadata.eventId() != null && auditLogRepository.existsByEventId(metadata.eventId())) {
+    public void recordAuditLog(AuditLogRecord record) {
+        AuditEventMetadata metadata = record.metadata();
+        if (metadata != null && metadata.eventId() != null && auditLogRepository.existsByEventId(metadata.eventId())) {
             return;
         }
 
         AuditLogEntity auditLog = new AuditLogEntity();
-        auditLog.setUserId(event.ownerId());
-        auditLog.setAction(SHOP_CREATED_ACTION);
-        auditLog.setResourceName(SHOP_RESOURCE_NAME);
-        auditLog.setResourceId(event.shopId().toString());
-        auditLog.setOldValue(null);
-        auditLog.setNewValue(objectMapper.valueToTree(event));
-        auditLog.setIpAddress(null);
-        auditLog.setEventType(metadata.eventType() == null ? SHOP_CREATED : metadata.eventType());
-        auditLog.setEventId(metadata.eventId());
-        auditLog.setTopic(metadata.topic());
-        auditLog.setMessageKey(metadata.messageKey());
-        auditLog.setSource(metadata.source());
-        auditLog.setProcessedAt(metadata.processedAt());
+        auditLog.setUserId(record.userId());
+        auditLog.setAction(record.action());
+        auditLog.setResourceName(record.resourceName());
+        auditLog.setResourceId(record.resourceId());
+        auditLog.setOldValue(record.oldValue() == null ? null : objectMapper.valueToTree(record.oldValue()));
+        auditLog.setNewValue(record.newValue() == null ? null : objectMapper.valueToTree(record.newValue()));
+        auditLog.setIpAddress(record.ipAddress());
+        auditLog.setEventType(metadata == null ? null : metadata.eventType());
+        auditLog.setEventId(metadata == null ? null : metadata.eventId());
+        auditLog.setTopic(metadata == null ? null : metadata.topic());
+        auditLog.setMessageKey(metadata == null ? null : metadata.messageKey());
+        auditLog.setSource(metadata == null ? null : metadata.source());
+        auditLog.setProcessedAt(metadata == null ? null : metadata.processedAt());
         auditLog.setCreatedAt(LocalDateTime.now());
 
         auditLogRepository.save(auditLog);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void recordShopCreated(ShopCreatedEvent event, AuditEventMetadata metadata) {
+        AuditEventMetadata resolvedMetadata = resolveShopCreatedMetadata(metadata);
+        recordAuditLog(new AuditLogRecord(
+                event.ownerId(),
+                SHOP_CREATED_ACTION,
+                SHOP_RESOURCE_NAME,
+                event.shopId().toString(),
+                null,
+                event,
+                null,
+                resolvedMetadata
+        ));
+    }
+
+    private AuditEventMetadata resolveShopCreatedMetadata(AuditEventMetadata metadata) {
+        if (metadata == null || metadata.eventType() != null) {
+            return metadata;
+        }
+
+        return new AuditEventMetadata(
+                metadata.eventId(),
+                SHOP_CREATED,
+                metadata.topic(),
+                metadata.messageKey(),
+                metadata.source(),
+                metadata.processedAt()
+        );
     }
 }
